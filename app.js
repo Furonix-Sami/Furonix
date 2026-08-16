@@ -42,7 +42,7 @@ function addToCart(productId, quantity = 1) {
 
 function buyNow(productId) {
   addToCart(productId, 1);
-  window.location.href = '/checkout.html';
+  window.location.href = 'checkout.html';
 }
 
 function updateCartCount() {
@@ -65,13 +65,13 @@ function createProductCard(product) {
   return `
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex flex-col hover:shadow-lg transition-all group h-full">
       <div class="h-40 bg-slate-100 rounded-2xl mb-4 flex items-center justify-center relative overflow-hidden p-4">
-        <a href="/product.html?id=${product.id}" class="w-full h-full flex items-center justify-center">
+        <a href="product.html?id=${product.id}" class="w-full h-full flex items-center justify-center">
           <img src="${product.image}" alt="${product.name}" class="object-cover max-h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
         </a>
         <div class="absolute top-2 left-2 ${inStock ? 'bg-blue-500' : 'bg-red-500'} text-white text-[9px] font-black px-2 py-0.5 rounded-full">${inStock ? 'IN STOCK' : 'OUT OF STOCK'}</div>
         ${product.discount > 0 ? `<div class="absolute top-2 right-2 bg-green-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full">-${product.discount}%</div>` : ''}
       </div>
-      <h3 class="font-bold text-slate-800 text-sm line-clamp-2 mb-1"><a href="/product.html?id=${product.id}" class="hover:text-blue-600 transition-colors">${product.name}</a></h3>
+      <h3 class="font-bold text-slate-800 text-sm line-clamp-2 mb-1"><a href="product.html?id=${product.id}" class="hover:text-blue-600 transition-colors">${product.name}</a></h3>
       <p class="text-xs text-slate-500 mb-2 uppercase tracking-wider">${product.category}</p>
       <div class="flex items-center gap-2 mt-auto mb-3">
         <span class="text-lg font-black text-blue-600">Rs. ${product.price.toLocaleString()}</span>
@@ -89,15 +89,15 @@ function createProductCard(product) {
 const navbarHTML = `
 <nav class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between shadow-sm shrink-0 z-50 sticky top-0">
   <div class="flex items-center gap-8">
-    <a href="/index.html" class="text-2xl font-black tracking-tighter text-blue-600 uppercase">
+    <a href="index.html" class="text-2xl font-black tracking-tighter text-blue-600 uppercase">
       Furonix
     </a>
     
     <!-- Desktop Navigation -->
     <div class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-500">
-      <a href="/index.html" class="hover:text-blue-600 transition-colors">Home</a>
-      <a href="/shop.html" class="hover:text-blue-600 transition-colors">Shop</a>
-      <a href="/contact.html" class="hover:text-blue-600 transition-colors">Contact</a>
+      <a href="index.html" class="hover:text-blue-600 transition-colors">Home</a>
+      <a href="shop.html" class="hover:text-blue-600 transition-colors">Shop</a>
+      <a href="contact.html" class="hover:text-blue-600 transition-colors">Contact</a>
     </div>
   </div>
 
@@ -110,7 +110,7 @@ const navbarHTML = `
       </div>
     </div>
 
-    <a href="/cart.html" class="relative p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
+    <a href="cart.html" class="relative p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
       <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
       <span class="cart-count-badge absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold border-2 border-white hidden">0</span>
     </a>
@@ -129,9 +129,9 @@ const navbarHTML = `
       <input type="text" placeholder="Search..." class="w-full bg-slate-100 rounded-full py-2 pl-10 pr-4 outline-none text-sm focus:ring-2 focus:ring-blue-600 border-none">
       <svg class="w-4 h-4 text-slate-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
     </div>
-    <a href="/index.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Home</a>
-    <a href="/shop.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Shop</a>
-    <a href="/contact.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Contact</a>
+    <a href="index.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Home</a>
+    <a href="shop.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Shop</a>
+    <a href="contact.html" class="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600">Contact</a>
   </div>
 </div>
 `;
@@ -148,7 +148,7 @@ const footerHTML = `
       <button class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">Cash on Delivery</button>
       <button class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-tighter">Advance Payment</button>
       <div class="hidden md:block h-4 w-[1px] bg-slate-200"></div>
-      <a href="/admin/login.html" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 uppercase transition-colors">Admin Dashboard</a>
+      <a href="admin/login.html" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 uppercase transition-colors">Admin Dashboard</a>
     </div>
   </div>
 </footer>
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter' && searchInput.value.trim()) {
-        window.location.href = `/shop.html?search=${encodeURIComponent(searchInput.value.trim())}`;
+        window.location.href = `shop.html?search=${encodeURIComponent(searchInput.value.trim())}`;
       }
     });
   }
