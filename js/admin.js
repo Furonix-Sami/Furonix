@@ -35,6 +35,25 @@ function closeAdminModal() {
   document.getElementById('modal-root').innerHTML = '';
 }
 
+// Reads a File object and uploads it to Google Drive via the backend.
+// Returns the public image URL, or null on failure.
+async function uploadImageFile(file) {
+  if (!file) return null;
+  const base64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  const res = await adminPost('uploadProductImage', {
+    base64Data: base64,
+    fileName: file.name,
+    mimeType: file.type || 'image/jpeg'
+  });
+  if (!res.success) { toast(res.message || 'Image upload failed', true); return null; }
+  return res.data.url;
+}
+
 function toast(message, isError) {
   const el = document.createElement('div');
   el.className = `fixed bottom-4 right-4 ${isError ? 'bg-red-600' : 'bg-slate-900'} text-white px-6 py-3 rounded-full shadow-lg z-50`;
@@ -132,6 +151,9 @@ async function loadProducts() {
       <td class="px-6 py-4">${p.stock}</td>
       <td class="px-6 py-4"><span class="px-3 py-1 ${p.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'} rounded-full text-xs font-bold">${p.status}</span></td>
       <td class="px-6 py-4">
+        <button onclick="toggleFeatured('${p.productId}', ${String(p.featured) === 'true'})" title="Toggle featured" class="text-lg ${String(p.featured) === 'true' ? 'text-yellow-400' : 'text-slate-300'} hover:text-yellow-400 transition-colors">★</button>
+      </td>
+      <td class="px-6 py-4">
         <button onclick="openProductModal('${p.productId}')" class="text-blue-600 font-medium text-sm hover:underline mr-3">Edit</button>
         <button onclick="deleteProductConfirm('${p.productId}')" class="text-red-500 font-medium text-sm hover:underline">Delete</button>
       </td>
@@ -169,7 +191,7 @@ function openProductModal(productId) {
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Price *</label>
               <input type="number" name="price" required min="0" value="${p ? p.price : ''}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
@@ -178,14 +200,26 @@ function openProductModal(productId) {
               <label class="block text-sm font-semibold text-slate-700 mb-2">Original Price</label>
               <input type="number" name="originalPrice" min="0" value="${p ? p.originalPrice : ''}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
             </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Stock *</label>
               <input type="number" name="stock" required min="0" value="${p ? p.stock : ''}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
             </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Discount (%)</label>
+              <input type="number" name="discount" min="0" max="100" value="${p ? p.discount : 0}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+          <div class="flex items-center gap-2 bg-yellow-50 border border-yellow-100 rounded-xl px-4 py-3">
+            <input type="checkbox" id="product-featured" name="featured" ${p && String(p.featured) === 'true' ? 'checked' : ''} class="w-4 h-4">
+            <label for="product-featured" class="text-sm font-semibold text-slate-700">⭐ Show on Homepage (Featured)</label>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Image URL</label>
-            <input name="images" value="${p ? p.images : ''}" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Product Images (you can select multiple)</label>
+            <div id="product-image-previews" class="flex flex-wrap gap-2 mb-2"></div>
+            <input type="file" id="product-image-file" accept="image/*" multiple class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+            <input type="hidden" name="images" id="product-images-value" value="${p ? p.images : ''}">
           </div>
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
@@ -203,6 +237,46 @@ function openProductModal(productId) {
       </div>
     </div>
   `;
+
+  renderImagePreviews();
+  document.getElementById('product-image-file').addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    toast('Uploading image(s)...');
+    for (const file of files) {
+      const url = await uploadImageFile(file);
+      if (url) {
+        const field = document.getElementById('product-images-value');
+        const existing = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+        existing.push(url);
+        field.value = existing.join(',');
+      }
+    }
+    e.target.value = '';
+    renderImagePreviews();
+    toast('Image(s) uploaded');
+  });
+}
+
+function renderImagePreviews() {
+  const field = document.getElementById('product-images-value');
+  const box = document.getElementById('product-image-previews');
+  if (!field || !box) return;
+  const urls = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+  box.innerHTML = urls.map((u, i) => `
+    <div class="relative w-16 h-16">
+      <img src="${u}" class="w-16 h-16 object-cover rounded-lg border border-slate-200">
+      <button type="button" onclick="removeProductImage(${i})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs leading-none">&times;</button>
+    </div>
+  `).join('');
+}
+
+function removeProductImage(index) {
+  const field = document.getElementById('product-images-value');
+  const urls = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+  urls.splice(index, 1);
+  field.value = urls.join(',');
+  renderImagePreviews();
 }
 
 async function saveProduct(e, productId) {
@@ -211,7 +285,9 @@ async function saveProduct(e, productId) {
   const data = {
     name: f.name.value.trim(), category: f.category.value, status: f.status.value,
     price: f.price.value, originalPrice: f.originalPrice.value || 0, stock: f.stock.value,
-    images: f.images.value.trim(), description: f.description.value.trim(), specifications: f.specifications.value.trim()
+    discount: f.discount.value || 0, featured: f.featured.checked,
+    images: document.getElementById('product-images-value').value.trim(),
+    description: f.description.value.trim(), specifications: f.specifications.value.trim()
   };
   const res = productId
     ? await adminPost('updateProduct', Object.assign({ productId }, data))
@@ -219,6 +295,13 @@ async function saveProduct(e, productId) {
   if (!res.success) { toast(res.message, true); return; }
   closeAdminModal();
   toast(res.message);
+  loadProducts();
+}
+
+async function toggleFeatured(productId, isFeatured) {
+  const res = await adminPost('updateProduct', { productId, featured: !isFeatured });
+  if (!res.success) { toast(res.message, true); return; }
+  toast(!isFeatured ? 'Marked as featured' : 'Removed from featured');
   loadProducts();
 }
 
@@ -379,36 +462,114 @@ async function deleteCategoryConfirm(categoryId) {
 // ============================================
 // SETTINGS
 // ============================================
+function setImagePreview(previewId, url) {
+  const img = document.getElementById(previewId);
+  if (!img) return;
+  if (url) { img.src = url; img.classList.remove('hidden'); }
+  else { img.classList.add('hidden'); }
+}
+
 async function loadSettings() {
   const res = await adminGet('getSettings');
   if (!res.success) { toast(res.message, true); return; }
   currentSettings = res.data;
-  document.getElementById('setting-cod-fee').value = currentSettings.codDeliveryCharge || 300;
-  document.getElementById('setting-advance-fee').value = currentSettings.advanceDeliveryCharge || 250;
-  document.getElementById('setting-advance-method').value = currentSettings.advancePaymentMethod || '';
-  document.getElementById('setting-account-title').value = currentSettings.advanceAccountTitle || '';
-  document.getElementById('setting-account-number').value = currentSettings.advanceAccountNumber || '';
-  document.getElementById('setting-instructions').value = currentSettings.advancePaymentInstructions || '';
+  const s = currentSettings;
+
+  document.getElementById('setting-brand-name').value = s.brandName || '';
+  document.getElementById('setting-logo-url').value = s.logo || '';
+  setImagePreview('setting-logo-preview', s.logo);
+  document.getElementById('setting-favicon-url').value = s.favicon || '';
+  setImagePreview('setting-favicon-preview', s.favicon);
+  document.getElementById('setting-store-description').value = s.storeDescription || '';
+
+  document.getElementById('setting-theme-color').value = s.themeColor || '#2563eb';
+  document.getElementById('setting-button-color').value = s.buttonColor || '#2563eb';
+
+  document.getElementById('setting-banner-url').value = s.bannerImage || '';
+  setImagePreview('setting-banner-preview', s.bannerImage);
+  document.getElementById('setting-banner-heading').value = s.bannerHeading || '';
+  document.getElementById('setting-banner-description').value = s.bannerDescription || '';
+  document.getElementById('setting-banner-button-text').value = s.bannerButtonText || '';
+
+  document.getElementById('setting-phone').value = s.phone || '';
+  document.getElementById('setting-email').value = s.email || '';
+  document.getElementById('setting-whatsapp').value = s.whatsapp || '';
+  document.getElementById('setting-facebook').value = s.facebookUrl || '';
+  document.getElementById('setting-instagram').value = s.instagramUrl || '';
+
+  document.getElementById('setting-footer-text').value = s.footerText || '';
+  document.getElementById('setting-announcement').value = s.announcementText || '';
+
+  document.getElementById('setting-cod-fee').value = s.codDeliveryCharge || 300;
+  document.getElementById('setting-advance-fee').value = s.advanceDeliveryCharge || 250;
+  document.getElementById('setting-advance-method').value = s.advancePaymentMethod || '';
+  document.getElementById('setting-account-title').value = s.advanceAccountTitle || '';
+  document.getElementById('setting-account-number').value = s.advanceAccountNumber || '';
+  document.getElementById('setting-instructions').value = s.advancePaymentInstructions || '';
+  document.getElementById('setting-currency').value = s.currency || 'Rs.';
+  document.getElementById('setting-low-stock-limit').value = s.lowStockLimit || 5;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  ['logo', 'favicon', 'banner'].forEach(kind => {
+    const fileInput = document.getElementById(`setting-${kind}-file`);
+    if (!fileInput) return;
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      toast('Uploading image...');
+      const url = await uploadImageFile(file);
+      if (url) {
+        document.getElementById(`setting-${kind}-url`).value = url;
+        setImagePreview(`setting-${kind}-preview`, url);
+        toast('Image uploaded');
+      }
+      e.target.value = '';
+    });
+  });
+
   const form = document.getElementById('settings-form');
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const settings = {
+        brandName: document.getElementById('setting-brand-name').value.trim(),
+        logo: document.getElementById('setting-logo-url').value.trim(),
+        favicon: document.getElementById('setting-favicon-url').value.trim(),
+        storeDescription: document.getElementById('setting-store-description').value.trim(),
+
+        themeColor: document.getElementById('setting-theme-color').value,
+        buttonColor: document.getElementById('setting-button-color').value,
+
+        bannerImage: document.getElementById('setting-banner-url').value.trim(),
+        bannerHeading: document.getElementById('setting-banner-heading').value.trim(),
+        bannerDescription: document.getElementById('setting-banner-description').value.trim(),
+        bannerButtonText: document.getElementById('setting-banner-button-text').value.trim(),
+
+        phone: document.getElementById('setting-phone').value.trim(),
+        email: document.getElementById('setting-email').value.trim(),
+        whatsapp: document.getElementById('setting-whatsapp').value.trim(),
+        facebookUrl: document.getElementById('setting-facebook').value.trim(),
+        instagramUrl: document.getElementById('setting-instagram').value.trim(),
+
+        footerText: document.getElementById('setting-footer-text').value.trim(),
+        announcementText: document.getElementById('setting-announcement').value.trim(),
+
         codDeliveryCharge: document.getElementById('setting-cod-fee').value,
         advanceDeliveryCharge: document.getElementById('setting-advance-fee').value,
         advancePaymentMethod: document.getElementById('setting-advance-method').value,
         advanceAccountTitle: document.getElementById('setting-account-title').value,
         advanceAccountNumber: document.getElementById('setting-account-number').value,
-        advancePaymentInstructions: document.getElementById('setting-instructions').value
+        advancePaymentInstructions: document.getElementById('setting-instructions').value,
+        currency: document.getElementById('setting-currency').value.trim() || 'Rs.',
+        lowStockLimit: document.getElementById('setting-low-stock-limit').value
       };
       const res = await adminPost('updateSettings', { settings });
       if (!res.success) { toast(res.message, true); return; }
       const msg = document.getElementById('settings-saved-msg');
       msg.classList.remove('hidden');
       setTimeout(() => msg.classList.add('hidden'), 2500);
+      toast('Settings saved. Refresh your website to see the changes.');
     });
   }
 });
