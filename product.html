@@ -39,6 +39,7 @@
           <div class="bg-white rounded-3xl p-8 aspect-square flex items-center justify-center border border-gray-100 shadow-sm relative overflow-hidden group">
             <img id="main-image" src="" alt="Product" class="object-cover max-h-full mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
           </div>
+          <div id="thumbnail-gallery" class="flex gap-3 overflow-x-auto pb-1"></div>
         </div>
 
         <!-- Details -->
@@ -112,6 +113,26 @@
           // Populate data
           document.title = `${product.name} | Furonix`;
           document.getElementById('main-image').src = product.image;
+
+          // Thumbnail gallery (only shown when the product has more than one image)
+          const gallery = document.getElementById('thumbnail-gallery');
+          const galleryImages = (product.images && product.images.length > 0) ? product.images : [product.image];
+          if (galleryImages.length > 1) {
+            gallery.innerHTML = galleryImages.map((src, i) => `
+              <button type="button" onclick="document.getElementById('main-image').src='${src}'"
+                class="w-16 h-16 shrink-0 rounded-xl border-2 ${i === 0 ? 'border-blue-600' : 'border-transparent'} bg-white overflow-hidden thumb-btn">
+                <img src="${src}" class="w-full h-full object-cover mix-blend-multiply">
+              </button>
+            `).join('');
+            // Highlight the active thumbnail on click
+            gallery.querySelectorAll('.thumb-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                gallery.querySelectorAll('.thumb-btn').forEach(b => b.classList.replace('border-blue-600', 'border-transparent'));
+                btn.classList.replace('border-transparent', 'border-blue-600');
+              });
+            });
+          }
+
           document.getElementById('p-category').textContent = product.category;
           document.getElementById('p-name').textContent = product.name;
           document.getElementById('p-price').textContent = `Rs. ${product.price.toLocaleString()}`;
