@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop | Furonix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <header id="shared-header"></header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div class="flex flex-col md:flex-row gap-8">
+        
+        <!-- Sidebar Filters -->
+        <aside class="w-full md:w-64 flex-shrink-0">
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 sticky top-28">
+            <h2 class="text-lg font-bold text-slate-900 mb-6 flex justify-between items-center">
+              Filters
+              <button id="reset-filters" class="text-sm font-normal text-blue-600 hover:underline">Reset</button>
+            </h2>
+            
+            <div class="mb-8">
+              <h3 class="font-semibold text-slate-700 mb-4">Categories</h3>
+              <div class="space-y-3" id="filter-categories">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="font-semibold text-slate-700 mb-4">Sort By</h3>
+              <select id="sort-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-600">
+                <option value="default">Recommended</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="flex-1">
+          <div class="mb-6 flex justify-between items-center">
+            <h1 class="text-2xl font-black text-slate-900" id="shop-title">All Products</h1>
+            <p class="text-sm text-slate-500" id="result-count"></p>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-grid">
+            <!-- Populated by JS -->
+          </div>
+          
+          <div id="no-results" class="hidden py-16 text-center">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">No products found</h3>
+            <p class="text-gray-500">Try adjusting your filters or search term.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer id="shared-footer"></footer>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        await loadFuronixData();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let activeCategory = urlParams.get('category') || 'All';
+        let searchQuery = (urlParams.get('search') || '').toLowerCase();
+        
+        const catContainer = document.getElementById('filter-categories');
+        const grid = document.getElementById('product-grid');
+        const title = document.getElementById('shop-title');
+        const count = document.getElementById('result-count');
+        const noResults = document.getElementById('no-results');
+        const sortSelect = document.getElementById('sort-select');
+        const resetBtn = document.getElementById('reset-filters');
+
+        function renderCategories() {
+          catContainer.innerHTML = '';
+          categories.forEach(cat => {
+            const label = document.createElement('label');
+            label.className = 'flex items-center gap-3 cursor-pointer group';
+            
+            const isChecked = activeCategory === cat;
+            
+            label.innerHTML = `
+              <div class="w-5 h-5 rounded border ${isChecked ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300'} flex items-center justify-center group-hover:border-blue-500 transition-colors">
+                ${isChecked ? '<svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
+              </div>
+              <span class="${isChecked ? 'font-semibold text-slate-900' : 'text-slate-600 group-hover:text-slate-900'} text-sm">${cat}</span>
+            `;
+            
+            label.addEventListener('click', (e) => {
+              e.preventDefault();
+              activeCategory = cat;
+              renderCategories();
+              renderProducts();
+              // Update URL without reload
+              const url = new URL(window.location);
+              if (cat === 'All') url.searchParams.delete('category');
+              else url.searchParams.set('category', cat);
+              window.history.pushState({}, '', url);
+            });
+            
+            catContainer.appendChild(label);
+          });
+        }
+
+        function renderProducts() {
+          let filtered = sampleProducts;
+          
+          if (activeCategory !== 'All') {
+            filtered = filtered.filter(p => p.category === activeCategory);
+            title.textContent = activeCategory;
+          } else {
+            title.textContent = 'All Products';
+          }
+
+          if (searchQuery) {
+            filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery) || p.description.toLowerCase().includes(searchQuery));
+            title.textContent = `Search results for "${searchQuery}"`;
+          }
+
+          const sort = sortSelect.value;
+          if (sort === 'price-low') filtered.sort((a, b) => a.price - b.price);
+          if (sort === 'price-high') filtered.sort((a, b) => b.price - a.price);
+
+          grid.innerHTML = '';
+          count.textContent = `Showing ${filtered.length} products`;
+          
+          if (filtered.length === 0) {
+            grid.classList.add('hidden');
+            noResults.classList.remove('hidden');
+          } else {
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            filtered.forEach(product => {
+              grid.innerHTML += createProductCard(product);
+            });
+          }
+        }
+
+        sortSelect.addEventListener('change', renderProducts);
+        
+        resetBtn.addEventListener('click', () => {
+          activeCategory = 'All';
+          searchQuery = '';
+          sortSelect.value = 'default';
+          // reset URL
+          window.history.pushState({}, '', window.location.pathname);
+          renderCategories();
+          renderProducts();
+        });
+
+        renderCategories();
+        renderProducts();
+      });
+    </script>
+  </body>
+</html>
