@@ -48,6 +48,7 @@ function clearAdminToken() {
 // turns a backend product row into the shape this design's app.js expects
 // (backend uses productId/images/stock, this design's UI expects id/image/stock)
 function mapProduct(p) {
+  const imageList = String(p.images || "").split(",").map(s => s.trim()).filter(Boolean);
   return {
     id: p.productId,
     name: p.name,
@@ -56,7 +57,9 @@ function mapProduct(p) {
     originalPrice: Number(p.originalPrice) || 0,
     discount: Number(p.discount) || 0,
     stock: Number(p.stock),
-    image: String(p.images || "").split(",")[0].trim(),
+    image: imageList[0] || "",
+    images: imageList,
+    featured: String(p.featured).toLowerCase() === "true",
     description: p.description || "",
     specs: String(p.specifications || "").split("\n").map(s => s.trim()).filter(Boolean)
   };
