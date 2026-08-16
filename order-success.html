@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Success | Furonix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header id="shared-header"></header>
+
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-20 text-center">
+      
+      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+
+      <h1 class="text-4xl font-black text-slate-900 mb-4">Order Confirmed!</h1>
+      <p class="text-slate-500 text-lg mb-10">Thank you for shopping with Furonix. Your order has been successfully placed.</p>
+
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-left max-w-md mx-auto mb-10 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+        <h2 class="font-bold text-slate-900 text-xl mb-6">Order Details</h2>
+        
+        <div class="space-y-4 text-sm">
+          <div class="flex justify-between border-b border-slate-50 pb-4">
+            <span class="text-slate-500">Order ID</span>
+            <span class="font-semibold text-slate-900" id="os-id">...</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-50 pb-4">
+            <span class="text-slate-500">Total Amount</span>
+            <span class="font-bold text-blue-700" id="os-total">...</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-50 pb-4">
+            <span class="text-slate-500">Payment Method</span>
+            <span class="font-semibold text-slate-900" id="os-method">...</span>
+          </div>
+        </div>
+        
+        <div id="advance-msg" class="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-xl text-yellow-800 text-sm hidden">
+          <strong>Note:</strong> Since you chose Advance Payment, our team will contact you shortly with bank/EasyPaisa details to complete the transfer.
+        </div>
+      </div>
+
+      <a href="index.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-full font-bold shadow-md shadow-blue-200 transition-all hover:shadow-lg">
+        Continue Shopping
+      </a>
+      
+    </main>
+
+    <footer id="shared-footer"></footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const orderDataRaw = localStorage.getItem('furonix_last_order');
+        if (orderDataRaw) {
+          const order = JSON.parse(orderDataRaw);
+          document.getElementById('os-id').textContent = order.orderId;
+          document.getElementById('os-total').textContent = `Rs. ${Number(order.total).toLocaleString()}`;
+          
+          if (order.paymentMethod === 'COD') {
+            document.getElementById('os-method').textContent = 'Cash on Delivery';
+          } else {
+            document.getElementById('os-method').textContent = 'Advance Payment';
+            document.getElementById('advance-msg').classList.remove('hidden');
+          }
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+    </script>
+  </body>
+</html>
