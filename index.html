@@ -16,14 +16,14 @@
         <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-xl relative overflow-hidden">
           <div class="relative z-10 max-w-lg mb-8 md:mb-0">
             <span class="bg-white/20 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest backdrop-blur-md">Limited Edition</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold mt-4 leading-tight">Upgrade Your<br/>Tech Lifestyle.</h1>
-            <p class="text-blue-100 text-sm md:text-base mt-4 opacity-90">Discover the latest Furonix S9 Series Smart Watches & Pro Audio.</p>
-            <a href="shop.html" class="inline-block mt-6 bg-white text-blue-600 px-8 py-3 rounded-full text-sm font-bold shadow-lg hover:bg-blue-50 transition-colors">Explore All Gear</a>
+            <h1 id="banner-heading" class="text-4xl md:text-5xl font-extrabold mt-4 leading-tight">Upgrade Your<br/>Tech Lifestyle.</h1>
+            <p id="banner-description" class="text-blue-100 text-sm md:text-base mt-4 opacity-90">Discover the latest Furonix S9 Series Smart Watches & Pro Audio.</p>
+            <a href="shop.html" id="banner-button" class="inline-block mt-6 bg-white text-blue-600 px-8 py-3 rounded-full text-sm font-bold shadow-lg hover:bg-blue-50 transition-colors">Explore All Gear</a>
           </div>
           <div class="absolute right-0 top-0 h-full w-1/2 md:w-1/3 bg-white/10 skew-x-12 transform origin-bottom"></div>
           <div class="w-48 h-48 bg-white/20 rounded-full blur-3xl absolute -bottom-10 -right-10 pointer-events-none"></div>
           <div class="relative z-10 w-full max-w-xs md:max-w-sm ml-auto">
-            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80" alt="Hero Watch" class="w-full rounded-2xl shadow-2xl transform md:rotate-6 border-4 border-white/10">
+            <img id="banner-image" src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80" alt="Hero" class="w-full rounded-2xl shadow-2xl transform md:rotate-6 border-4 border-white/10">
           </div>
         </div>
       </section>
@@ -90,6 +90,13 @@
       document.addEventListener('DOMContentLoaded', async () => {
         await loadFuronixData();
 
+        // Apply banner settings from the admin dashboard, if set
+        const s = window.siteSettings || {};
+        if (s.bannerHeading) document.getElementById('banner-heading').textContent = s.bannerHeading;
+        if (s.bannerDescription) document.getElementById('banner-description').textContent = s.bannerDescription;
+        if (s.bannerButtonText) document.getElementById('banner-button').textContent = s.bannerButtonText;
+        if (s.bannerImage) document.getElementById('banner-image').src = s.bannerImage;
+
         // Render Categories
         const catContainer = document.getElementById('category-pills');
         categories.forEach(cat => {
@@ -102,12 +109,14 @@
           catContainer.appendChild(a);
         });
 
-        // Render Featured (first 4)
+        // Render Featured products (falls back to the first 4 if none are marked featured)
         const featuredContainer = document.getElementById('featured-products');
         if (sampleProducts.length === 0) {
           featuredContainer.innerHTML = '<p class="text-slate-400 col-span-full text-center py-10">No products yet.</p>';
         } else {
-          sampleProducts.slice(0, 4).forEach(product => {
+          const featured = sampleProducts.filter(p => p.featured);
+          const toShow = (featured.length > 0 ? featured : sampleProducts).slice(0, 8);
+          toShow.forEach(product => {
             featuredContainer.innerHTML += createProductCard(product);
           });
         }
