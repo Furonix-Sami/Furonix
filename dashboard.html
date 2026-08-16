@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Furonix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body class="bg-slate-50">
+    
+    <div class="flex h-screen overflow-hidden">
+      
+      <!-- Sidebar -->
+      <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
+        <div class="h-20 flex items-center px-6 font-black tracking-widest text-xl border-b border-slate-800">
+          <span class="text-indigo-400 mr-2">F</span>FURONIX
+        </div>
+        <nav class="flex-1 overflow-y-auto py-6 space-y-2 px-4" id="admin-nav">
+          <a href="#" data-target="overview" class="admin-tab active flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            Overview
+          </a>
+          <a href="#" data-target="orders" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            Orders
+          </a>
+          <a href="#" data-target="products" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            Products
+          </a>
+          <a href="#" data-target="categories" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+            Categories
+          </a>
+          <a href="#" data-target="settings" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="p-4 border-t border-slate-800">
+          <a href="#" id="logout-link" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Logout
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- Header -->
+        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 flex-shrink-0 z-10">
+          <h1 class="text-xl font-bold text-slate-900" id="header-title">Dashboard Overview</h1>
+          <div class="flex items-center gap-4">
+            <span class="text-sm font-medium text-slate-600 hidden sm:block" id="admin-username-label">Logged in</span>
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">SU</div>
+          </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-8" id="main-content">
+          
+          <!-- SECTION: Overview -->
+          <div id="section-overview" class="admin-section block space-y-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="stat-cards">
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm col-span-full text-center text-slate-400">Loading stats...</div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+              <div class="px-6 py-5 border-b border-slate-50 bg-slate-50/50">
+                <h3 class="font-bold text-slate-900">Recent Orders</h3>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="text-slate-500 bg-slate-50">
+                    <tr>
+                      <th class="px-6 py-4 font-medium">Order ID</th>
+                      <th class="px-6 py-4 font-medium">Customer</th>
+                      <th class="px-6 py-4 font-medium">Amount</th>
+                      <th class="px-6 py-4 font-medium">Method</th>
+                      <th class="px-6 py-4 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-50" id="recent-orders-body">
+                    <tr><td class="px-6 py-4 text-slate-400" colspan="5">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: Products -->
+          <div id="section-products" class="admin-section hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <h2 class="font-bold text-slate-900 ml-2">Product Catalog</h2>
+              <div class="flex gap-2 items-center w-full sm:w-auto">
+                <input type="text" id="product-search" placeholder="Search products..." class="bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:w-56">
+                <button onclick="openProductModal()" class="bg-blue-600 text-white px-5 py-2 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors whitespace-nowrap">+ Add Product</button>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="text-slate-500 bg-slate-50">
+                    <tr>
+                      <th class="px-6 py-4 font-medium">Name</th>
+                      <th class="px-6 py-4 font-medium">Category</th>
+                      <th class="px-6 py-4 font-medium">Price</th>
+                      <th class="px-6 py-4 font-medium">Stock</th>
+                      <th class="px-6 py-4 font-medium">Status</th>
+                      <th class="px-6 py-4 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-50" id="products-table-body">
+                    <tr><td class="px-6 py-4 text-slate-400" colspan="6">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: Orders -->
+          <div id="section-orders" class="admin-section hidden space-y-6">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-3 items-center justify-between">
+              <h2 class="font-bold text-slate-900 ml-2">Manage Orders</h2>
+              <div class="flex gap-2 w-full sm:w-auto">
+                <input type="text" id="order-search" placeholder="Search order ID, name, phone..." class="bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 flex-1">
+                <select id="order-status-filter" class="bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-sm outline-none">
+                  <option value="">All Status</option>
+                  <option>Pending</option><option>Confirmed</option><option>Processing</option>
+                  <option>Shipped</option><option>Delivered</option><option>Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="text-slate-500 bg-slate-50">
+                    <tr>
+                      <th class="px-6 py-4 font-medium">Order ID</th>
+                      <th class="px-6 py-4 font-medium">Customer</th>
+                      <th class="px-6 py-4 font-medium">Phone</th>
+                      <th class="px-6 py-4 font-medium">Total</th>
+                      <th class="px-6 py-4 font-medium">Method</th>
+                      <th class="px-6 py-4 font-medium">Status</th>
+                      <th class="px-6 py-4 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-50" id="orders-table-body">
+                    <tr><td class="px-6 py-4 text-slate-400" colspan="7">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: Categories -->
+          <div id="section-categories" class="admin-section hidden space-y-6">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+              <h2 class="font-bold text-slate-900 ml-2">Categories</h2>
+              <button onclick="openCategoryModal()" class="bg-blue-600 text-white px-5 py-2 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors">+ Add Category</button>
+            </div>
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+              <ul class="space-y-3" id="categories-list">
+                <li class="text-slate-400 text-center py-6">Loading...</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SECTION: Settings -->
+          <div id="section-settings" class="admin-section hidden space-y-6">
+             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <h2 class="font-bold text-slate-900 ml-2">Store Settings</h2>
+            </div>
+            
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 max-w-2xl">
+              <form class="space-y-6" id="settings-form">
+                <div>
+                  <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Delivery Charges</h3>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">COD Fee (Rs.)</label>
+                      <input type="number" id="setting-cod-fee" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Advance Fee (Rs.)</label>
+                      <input type="number" id="setting-advance-fee" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-4">
+                  <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Advance Payment Details</h3>
+                  <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Method (Easypaisa/JazzCash/Bank)</label>
+                      <input type="text" id="setting-advance-method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Account Title</label>
+                      <input type="text" id="setting-account-title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Account Number</label>
+                    <input type="text" id="setting-account-number" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Instructions shown to customer</label>
+                    <textarea rows="4" id="setting-instructions" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                  </div>
+                </div>
+
+                <div class="pt-6">
+                  <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-blue-700 transition-colors">Save Settings</button>
+                  <span id="settings-saved-msg" class="ml-4 text-sm text-green-600 hidden">Saved!</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal root -->
+    <div id="modal-root"></div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.admin-tab');
+        const sections = document.querySelectorAll('.admin-section');
+        const title = document.getElementById('header-title');
+
+        const titleMap = {
+          'overview': 'Dashboard Overview',
+          'orders': 'Manage Orders',
+          'products': 'Product Catalog',
+          'categories': 'Manage Categories',
+          'settings': 'Store Settings'
+        };
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Remove active classes
+            tabs.forEach(t => {
+              t.classList.remove('bg-blue-600', 'text-white');
+              t.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            });
+            
+            // Add active class
+            tab.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            tab.classList.add('bg-blue-600', 'text-white');
+
+            // Hide all sections
+            sections.forEach(s => s.classList.add('hidden', 'block'));
+            sections.forEach(s => s.classList.remove('block'));
+
+            // Show target
+            const targetId = tab.getAttribute('data-target');
+            document.getElementById(`section-${targetId}`).classList.remove('hidden');
+            document.getElementById(`section-${targetId}`).classList.add('block');
+            
+            // Update title
+            title.textContent = titleMap[targetId];
+
+            // Load data for that tab
+            if (targetId === 'overview') loadOverview();
+            if (targetId === 'products') loadProducts();
+            if (targetId === 'orders') loadOrders();
+            if (targetId === 'categories') loadCategories();
+            if (targetId === 'settings') loadSettings();
+          });
+        });
+
+        initAdminDashboard();
+      });
+    </script>
+  </body>
+</html>
