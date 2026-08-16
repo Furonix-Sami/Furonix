@@ -89,7 +89,7 @@ function createProductCard(product) {
 const navbarHTML = `
 <nav class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between shadow-sm shrink-0 z-50 sticky top-0">
   <div class="flex items-center gap-8">
-    <a href="index.html" class="text-2xl font-black tracking-tighter text-blue-600 uppercase">
+    <a href="index.html" id="brand-logo-link" class="text-2xl font-black tracking-tighter text-blue-600 uppercase">
       Furonix
     </a>
     
@@ -140,11 +140,12 @@ const footerHTML = `
 <footer class="py-8 bg-white border-t border-slate-200 px-8 mt-12 shrink-0">
   <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
     <div class="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 items-center">
-      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">&copy; ${new Date().getFullYear()} Furonix</span>
+      <span id="footer-copyright" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">&copy; ${new Date().getFullYear()} Furonix</span>
       <div class="hidden md:block h-4 w-[1px] bg-slate-200"></div>
-      <span class="text-[10px] text-slate-500 font-medium">By Sami Ullah | 03274170487 | rs9409035@gmail.com</span>
+      <span id="footer-contact" class="text-[10px] text-slate-500 font-medium"></span>
     </div>
     <div class="flex flex-wrap justify-center gap-3 md:gap-4 items-center">
+      <div id="footer-social" class="flex items-center gap-3"></div>
       <button class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">Cash on Delivery</button>
       <button class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-tighter">Advance Payment</button>
       <div class="hidden md:block h-4 w-[1px] bg-slate-200"></div>
@@ -153,6 +154,100 @@ const footerHTML = `
   </div>
 </footer>
 `;
+
+// Applies branding/design settings (loaded from the Settings sheet) to any
+// page that has already injected the shared navbar/footer. Safe to call
+// even if a setting is empty - it just leaves the default in place.
+function applySiteSettings() {
+  const s = window.siteSettings || {};
+
+  // Page title / brand name
+  if (s.brandName) {
+    const logoLink = document.getElementById('brand-logo-link');
+    if (logoLink && !s.logo) logoLink.textContent = s.brandName;
+  }
+
+  // Logo
+  const logoLink = document.getElementById('brand-logo-link');
+  if (logoLink && s.logo) {
+    logoLink.innerHTML = `<img src="${s.logo}" alt="${s.brandName || 'Logo'}" class="h-8 w-auto object-contain">`;
+  }
+
+  // Favicon
+  if (s.favicon) {
+    let favEl = document.querySelector('link[rel="icon"]');
+    if (!favEl) {
+      favEl = document.createElement('link');
+      favEl.rel = 'icon';
+      document.head.appendChild(favEl);
+    }
+    favEl.href = s.favicon;
+  }
+
+  // Theme / button colors - override the Tailwind blue utility classes site-wide
+  const brand = s.themeColor || '';
+  const btn = s.buttonColor || brand;
+  if (brand || btn) {
+    let styleTag = document.getElementById('furonix-dynamic-theme');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'furonix-dynamic-theme';
+      document.head.appendChild(styleTag);
+    }
+    styleTag.textContent = `
+      .bg-blue-600, .bg-blue-700, .from-blue-600, .to-blue-700, .via-indigo-600 { background-color: ${btn || brand} !important; }
+      .text-blue-600, .text-blue-700 { color: ${brand || btn} !important; }
+      .border-blue-600 { border-color: ${brand || btn} !important; }
+      .cart-count-badge { background-color: ${btn || brand} !important; }
+    `;
+  }
+
+  // Footer contact / copyright / social links
+  const footerContact = document.getElementById('footer-contact');
+  if (footerContact) {
+    const bits = [s.phone, s.email].filter(Boolean);
+    footerContact.textContent = bits.join(' | ');
+  }
+  const footerCopyright = document.getElementById('footer-copyright');
+  if (footerCopyright && s.footerText) {
+    footerCopyright.textContent = s.footerText;
+  }
+  const footerSocial = document.getElementById('footer-social');
+  if (footerSocial) {
+    let icons = '';
+    if (s.facebookUrl) icons += `<a href="${s.facebookUrl}" target="_blank" rel="noopener" class="text-[10px] font-bold text-blue-600 hover:underline">Facebook</a>`;
+    if (s.instagramUrl) icons += `<a href="${s.instagramUrl}" target="_blank" rel="noopener" class="text-[10px] font-bold text-pink-600 hover:underline">Instagram</a>`;
+    footerSocial.innerHTML = icons;
+  }
+
+  // Announcement bar
+  if (s.announcementText) {
+    let bar = document.getElementById('announcement-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'announcement-bar';
+      bar.className = 'text-center text-xs font-semibold text-white py-2 px-4';
+      bar.style.backgroundColor = btn || brand || '#111827';
+      document.body.insertBefore(bar, document.body.firstChild);
+    }
+    bar.textContent = s.announcementText;
+  }
+
+  // Floating WhatsApp button
+  if (s.whatsapp) {
+    let wa = document.getElementById('whatsapp-float-btn');
+    if (!wa) {
+      wa = document.createElement('a');
+      wa.id = 'whatsapp-float-btn';
+      wa.target = '_blank';
+      wa.rel = 'noopener';
+      wa.className = 'fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-colors';
+      wa.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.4 1.3-1.93 1.34-.5.05-1.02.24-3.44-.72-2.9-1.16-4.77-4.1-4.92-4.29-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.14.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.37-.44.5-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.13.63-.08.17-.2.72-.84.91-1.13.19-.29.39-.24.65-.14.27.1 1.69.8 1.98.94.29.15.48.22.55.34.07.13.07.75-.17 1.43z"/></svg>`;
+      document.body.appendChild(wa);
+    }
+    wa.href = `https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}`;
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   // Inject navbar and footer
@@ -182,5 +277,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `shop.html?search=${encodeURIComponent(searchInput.value.trim())}`;
       }
     });
+  }
+
+  // Apply branding/design settings once they're loaded by the page
+  // (loadFuronixData sets window.siteSettings). Each page already calls
+  // loadFuronixData() itself, so we just wait for it here too.
+  if (typeof loadFuronixData === 'function') {
+    loadFuronixData().then(() => applySiteSettings());
   }
 });
