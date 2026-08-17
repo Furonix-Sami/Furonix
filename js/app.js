@@ -168,9 +168,9 @@ function applySiteSettings() {
   }
 
   // Logo
-  const logoLink = document.getElementById('brand-logo-link');
-  if (logoLink && s.logo) {
-    logoLink.innerHTML = `<img src="${s.logo}" alt="${s.brandName || 'Logo'}" class="h-8 w-auto object-contain">`;
+  const logoLink2 = document.getElementById('brand-logo-link');
+  if (logoLink2 && s.logo) {
+    logoLink2.innerHTML = `<img src="${driveImg(s.logo)}" alt="${s.brandName || 'Logo'}" class="h-8 w-auto object-contain">`;
   }
 
   // Favicon
@@ -181,7 +181,7 @@ function applySiteSettings() {
       favEl.rel = 'icon';
       document.head.appendChild(favEl);
     }
-    favEl.href = s.favicon;
+    favEl.href = driveImg(s.favicon);
   }
 
   // Theme / button colors - override the Tailwind blue utility classes site-wide
