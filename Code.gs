@@ -2691,7 +2691,7 @@ function uploadProductImage(body) {
 
 
     var imageUrl =
-      "https://drive.google.com/uc?export=view&id=" +
+      "https://lh3.googleusercontent.com/d/" +
       fileId;
 
 
@@ -3216,14 +3216,10 @@ function testBackend() {
     sheetToObjects(
       getSheet("Products")
     );
-
-
   result.orders =
     sheetToObjects(
       getSheet("Orders")
     );
-
-
   Logger.log(
     JSON.stringify(
       result,
@@ -3231,8 +3227,6 @@ function testBackend() {
       2
     )
   );
-
-
   return ok(
     "Backend test completed",
     result
