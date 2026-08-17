@@ -47,8 +47,22 @@ function clearAdminToken() {
 
 // turns a backend product row into the shape this design's app.js expects
 // (backend uses productId/images/stock, this design's UI expects id/image/stock)
+// Google Drive's "uc?export=view" links often fail to render as <img src>
+// (hotlink blocks / confirmation pages). This rewrites any Drive link -
+// wherever it came from - into the reliable Drive thumbnail endpoint.
+function driveImg(url) {
+  if (!url) return url;
+  const str = String(url);
+  if (str.indexOf('drive.google.com') === -1) return str;
+  const match = str.match(/[?&]id=([a-zA-Z0-9_-]+)/) || str.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+  }
+  return str;
+}
+
 function mapProduct(p) {
-  const imageList = String(p.images || "").split(",").map(s => s.trim()).filter(Boolean);
+  const imageList = String(p.images || "").split(",").map(s => driveImg(s.trim())).filter(Boolean);
   return {
     id: p.productId,
     name: p.name,
