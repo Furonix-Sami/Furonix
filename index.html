@@ -95,7 +95,7 @@
         if (s.bannerHeading) document.getElementById('banner-heading').textContent = s.bannerHeading;
         if (s.bannerDescription) document.getElementById('banner-description').textContent = s.bannerDescription;
         if (s.bannerButtonText) document.getElementById('banner-button').textContent = s.bannerButtonText;
-        if (s.bannerImage) document.getElementById('banner-image').src = s.bannerImage;
+        if (s.bannerImage) document.getElementById('banner-image').src = driveImg(s.bannerImage);
 
         // Render Categories
         const catContainer = document.getElementById('category-pills');
