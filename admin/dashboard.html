@@ -7,10 +7,6 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Admin Dashboard | Furonix</title>
-
-    <!-- Auth guard: runs before ANY page content is shown or downloaded,
-         so a logged-out visitor never sees the dashboard shell, even for
-         a split second, and the mobile back/forward cache can't bypass it. -->
     <style>html{visibility:hidden}</style>
     <script>
       (function () {
@@ -21,15 +17,11 @@
         }
       })();
     </script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../style.css">
   </head>
   <body class="bg-slate-50">
-    
     <div class="flex h-screen overflow-hidden">
-      
-      <!-- Sidebar -->
       <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
         <div class="h-20 flex items-center px-6 font-black tracking-widest text-xl border-b border-slate-800">
           <span class="text-indigo-400 mr-2">F</span>FURONIX
@@ -67,11 +59,7 @@
           </a>
         </div>
       </aside>
-
-      <!-- Main Content -->
       <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        
-        <!-- Header -->
         <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 flex-shrink-0 z-10">
           <h1 class="text-xl font-bold text-slate-900" id="header-title">Dashboard Overview</h1>
           <div class="flex items-center gap-4">
@@ -79,16 +67,11 @@
             <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">SU</div>
           </div>
         </header>
-
-        <!-- Content Area -->
         <div class="flex-1 overflow-y-auto p-8" id="main-content">
-          
-          <!-- SECTION: Overview -->
           <div id="section-overview" class="admin-section block space-y-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="stat-cards">
               <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm col-span-full text-center text-slate-400">Loading stats...</div>
             </div>
-
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
               <div class="px-6 py-5 border-b border-slate-50 bg-slate-50/50">
                 <h3 class="font-bold text-slate-900">Recent Orders</h3>
@@ -112,7 +95,6 @@
             </div>
           </div>
 
-          <!-- SECTION: Products -->
           <div id="section-products" class="admin-section hidden space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <h2 class="font-bold text-slate-900 ml-2">Product Catalog</h2>
@@ -144,7 +126,6 @@
             </div>
           </div>
 
-          <!-- SECTION: Orders -->
           <div id="section-orders" class="admin-section hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-3 items-center justify-between">
               <h2 class="font-bold text-slate-900 ml-2">Manage Orders</h2>
@@ -178,8 +159,6 @@
               </div>
             </div>
           </div>
-
-          <!-- SECTION: Categories -->
           <div id="section-categories" class="admin-section hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
               <h2 class="font-bold text-slate-900 ml-2">Categories</h2>
@@ -191,8 +170,6 @@
               </ul>
             </div>
           </div>
-
-          <!-- SECTION: Announcement -->
           <div id="section-announcement" class="admin-section hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <h2 class="font-bold text-slate-900 ml-2">Site-wide Announcement</h2>
@@ -209,16 +186,12 @@
               </form>
             </div>
           </div>
-
-          <!-- SECTION: Settings -->
           <div id="section-settings" class="admin-section hidden space-y-6">
              <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <h2 class="font-bold text-slate-900 ml-2">Store Settings</h2>
             </div>
-            
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 max-w-2xl">
               <form class="space-y-6" id="settings-form">
-
                 <div>
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Branding</h3>
                   <div class="mb-4">
@@ -244,7 +217,6 @@
                     <textarea rows="2" id="setting-store-description" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                   </div>
                 </div>
-
                 <div class="pt-4">
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Colors &amp; Design</h3>
                   <div class="grid grid-cols-2 gap-4">
@@ -258,7 +230,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="pt-4">
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Homepage Banner</h3>
                   <div class="mb-4">
@@ -280,7 +251,6 @@
                     <input type="text" id="setting-banner-button-text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
                   </div>
                 </div>
-
                 <div class="pt-4">
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Contact &amp; Social Links</h3>
                   <div class="grid grid-cols-2 gap-4 mb-4">
@@ -308,7 +278,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="pt-4">
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Footer</h3>
                   <div>
@@ -316,7 +285,6 @@
                     <input type="text" id="setting-footer-text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
                   </div>
                 </div>
-
                 <div>
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Delivery Charges</h3>
                   <div class="grid grid-cols-2 gap-4">
@@ -340,7 +308,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="pt-4">
                   <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Advance Payment Details</h3>
                   <div class="grid grid-cols-2 gap-4 mb-4">
@@ -362,14 +329,12 @@
                     <textarea rows="4" id="setting-instructions" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                   </div>
                 </div>
-
                 <div class="pt-6">
                   <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-blue-700 transition-colors">Save Settings</button>
                   <span id="settings-saved-msg" class="ml-4 text-sm text-green-600 hidden">Saved!</span>
                 </div>
               </form>
             </div>
-
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 max-w-2xl">
               <h3 class="font-bold text-slate-900 mb-1">Security &mdash; Change Admin Password</h3>
               <p class="text-sm text-slate-500 mb-4">Agar aapne pehli dafa login kiya hai aur default password (admin123) tabdeel nahi kiya, to abhi kar lein.</p>
@@ -386,14 +351,10 @@
               </form>
             </div>
           </div>
-
         </div>
       </main>
     </div>
-
-    <!-- Modal root -->
     <div id="modal-root"></div>
-
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/admin.js"></script>
@@ -402,7 +363,6 @@
         const tabs = document.querySelectorAll('.admin-tab');
         const sections = document.querySelectorAll('.admin-section');
         const title = document.getElementById('header-title');
-
         const titleMap = {
           'overview': 'Dashboard Overview',
           'orders': 'Manage Orders',
@@ -411,34 +371,21 @@
           'announcement': 'Site-wide Announcement',
           'settings': 'Store Settings'
         };
-
         tabs.forEach(tab => {
           tab.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            // Remove active classes
             tabs.forEach(t => {
               t.classList.remove('bg-blue-600', 'text-white');
               t.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
             });
-            
-            // Add active class
             tab.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
             tab.classList.add('bg-blue-600', 'text-white');
-
-            // Hide all sections
             sections.forEach(s => s.classList.add('hidden', 'block'));
             sections.forEach(s => s.classList.remove('block'));
-
-            // Show target
             const targetId = tab.getAttribute('data-target');
             document.getElementById(`section-${targetId}`).classList.remove('hidden');
-            document.getElementById(`section-${targetId}`).classList.add('block');
-            
-            // Update title
+            document.getElementById(`section-${targetId}`).classList.add('block');         
             title.textContent = titleMap[targetId];
-
-            // Load data for that tab
             if (targetId === 'overview') loadOverview();
             if (targetId === 'products') loadProducts();
             if (targetId === 'orders') loadOrders();
@@ -447,7 +394,6 @@
             if (targetId === 'settings') loadSettings();
           });
         });
-
         initAdminDashboard();
       });
     </script>
