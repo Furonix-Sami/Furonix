@@ -3,7 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Admin Dashboard | Furonix</title>
+
+    <!-- Auth guard: runs before ANY page content is shown or downloaded,
+         so a logged-out visitor never sees the dashboard shell, even for
+         a split second, and the mobile back/forward cache can't bypass it. -->
+    <style>html{visibility:hidden}</style>
+    <script>
+      (function () {
+        if (!localStorage.getItem('furonix_admin_token')) {
+          location.replace('login.html');
+        } else {
+          document.documentElement.style.visibility = 'visible';
+        }
+      })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../style.css">
   </head>
@@ -32,6 +50,10 @@
           <a href="#" data-target="categories" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
             Categories
+          </a>
+          <a href="#" data-target="announcement" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+            Announcement
           </a>
           <a href="#" data-target="settings" class="admin-tab flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -170,6 +192,24 @@
             </div>
           </div>
 
+          <!-- SECTION: Announcement -->
+          <div id="section-announcement" class="admin-section hidden space-y-6">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <h2 class="font-bold text-slate-900 ml-2">Site-wide Announcement</h2>
+              <p class="text-sm text-slate-500 ml-2 mt-1">Yeh message aapki website ke bilkul upar, har page par ek bar mein dikhega. Khali chorne se bar ghayab ho jayegi.</p>
+            </div>
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 max-w-2xl">
+              <form class="space-y-4" id="announcement-form">
+                <textarea id="announcement-text" rows="3" placeholder="Jaise: Eid Sale! Sab items par 20% off, limited time." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div class="flex gap-3 items-center">
+                  <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-blue-700 transition-colors">Save &amp; Publish</button>
+                  <button type="button" onclick="document.getElementById('announcement-text').value=''; document.getElementById('announcement-form').requestSubmit();" class="border border-slate-200 text-slate-600 px-6 py-3 rounded-full font-bold hover:bg-slate-50">Clear / Hide Bar</button>
+                  <span id="announcement-saved-msg" class="text-sm text-green-600 hidden">Saved!</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
           <!-- SECTION: Settings -->
           <div id="section-settings" class="admin-section hidden space-y-6">
              <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
@@ -270,14 +310,10 @@
                 </div>
 
                 <div class="pt-4">
-                  <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Footer &amp; Announcement</h3>
-                  <div class="mb-4">
+                  <h3 class="font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Footer</h3>
+                  <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Footer Text</label>
                     <input type="text" id="setting-footer-text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
-                  </div>
-                  <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Announcement Bar (leave empty to hide)</label>
-                    <input type="text" id="setting-announcement" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
                   </div>
                 </div>
 
@@ -333,6 +369,22 @@
                 </div>
               </form>
             </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 max-w-2xl">
+              <h3 class="font-bold text-slate-900 mb-1">Security &mdash; Change Admin Password</h3>
+              <p class="text-sm text-slate-500 mb-4">Agar aapne pehli dafa login kiya hai aur default password (admin123) tabdeel nahi kiya, to abhi kar lein.</p>
+              <form class="space-y-4" id="change-password-form">
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">Current Password</label>
+                  <input type="password" id="cp-old-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">New Password (kam az kam 6 characters)</label>
+                  <input type="password" id="cp-new-password" required minlength="6" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" class="bg-slate-900 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-slate-800 transition-colors">Update Password</button>
+              </form>
+            </div>
           </div>
 
         </div>
@@ -356,6 +408,7 @@
           'orders': 'Manage Orders',
           'products': 'Product Catalog',
           'categories': 'Manage Categories',
+          'announcement': 'Site-wide Announcement',
           'settings': 'Store Settings'
         };
 
@@ -390,6 +443,7 @@
             if (targetId === 'products') loadProducts();
             if (targetId === 'orders') loadOrders();
             if (targetId === 'categories') loadCategories();
+            if (targetId === 'announcement') loadAnnouncement();
             if (targetId === 'settings') loadSettings();
           });
         });
