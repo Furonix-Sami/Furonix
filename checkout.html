@@ -18,11 +18,8 @@
       
       <div class="flex flex-col lg:flex-row gap-10">
         
-        <!-- Checkout Form -->
         <div class="flex-1">
           <form id="checkout-form" class="space-y-8">
-            
-            <!-- Contact Info -->
             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
               <h2 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">1</span>
@@ -43,8 +40,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- Shipping Address -->
             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
               <h2 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">2</span>
@@ -61,15 +56,12 @@
                 </div>
               </div>
             </div>
-
-            <!-- Payment Method -->
             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
               <h2 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">3</span>
                 Payment Method
               </h2>
-              <div class="space-y-4">
-                
+              <div class="space-y-4">                
                 <label class="flex items-start p-4 border rounded-2xl cursor-pointer transition-colors relative border-blue-600 bg-blue-50" id="label-cod">
                   <div class="flex items-center h-5">
                     <input type="radio" name="payment" value="cod" checked class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
@@ -80,7 +72,6 @@
                     <span class="block text-sm font-semibold text-blue-600 mt-1">Delivery Charge: Rs. <span id="charge-cod">200</span></span>
                   </div>
                 </label>
-
                 <label class="flex items-start p-4 border border-slate-200 rounded-2xl cursor-pointer transition-colors hover:bg-slate-50" id="label-advance">
                   <div class="flex items-center h-5">
                     <input type="radio" name="payment" value="advance" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
@@ -91,22 +82,16 @@
                     <span class="block text-sm font-semibold text-green-600 mt-1">Discounted Delivery: Rs. <span id="charge-adv">100</span></span>
                   </div>
                 </label>
-
               </div>
             </div>
-
           </form>
         </div>
-
-        <!-- Order Summary Sidebar -->
         <div class="w-full lg:w-[400px] flex-shrink-0">
           <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 sticky top-28">
             <h2 class="text-xl font-bold text-slate-900 mb-6">Your Order</h2>
             
-            <div id="checkout-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
-              <!-- populated by JS -->
+            <div id="checkout-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">           
             </div>
-
             <div class="space-y-3 text-sm text-slate-600 border-t border-b border-slate-100 py-6 mb-6">
               <div class="flex justify-between">
                 <span>Subtotal</span>
@@ -117,31 +102,25 @@
                 <span class="font-medium text-slate-900" id="chk-delivery">Rs. 0</span>
               </div>
             </div>
-            
             <div class="flex justify-between items-center mb-8">
               <span class="font-bold text-slate-900">Total to Pay</span>
               <span class="text-2xl font-black text-blue-700" id="chk-total">Rs. 0</span>
             </div>
-            
             <button form="checkout-form" type="submit" class="w-full block text-center bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full font-bold shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:-translate-y-0.5 text-lg">
               Place Order
             </button>
             <p class="text-xs text-center text-slate-400 mt-4">By placing this order, you agree to our terms of service.</p>
           </div>
         </div>
-
       </div>
     </main>
-
     <footer id="shared-footer"></footer>
-
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
     <script>
       let subtotal = 0;
       let deliveryFee = 0;
-
       function renderCheckoutSummary() {
         const container = document.getElementById('checkout-items');
         container.innerHTML = '';
@@ -169,10 +148,8 @@
             </div>
           `;
         });
-
         updateTotals();
       }
-
       function updateTotals() {
         document.getElementById('chk-subtotal').textContent = `Rs. ${subtotal.toLocaleString()}`;
         document.getElementById('chk-delivery').textContent = `Rs. ${deliveryFee.toLocaleString()}`;
@@ -199,8 +176,6 @@
         document.getElementById('charge-adv').textContent = deliveryCharges.advance;
         
         renderCheckoutSummary();
-
-        // Payment method change listener
         const radios = document.querySelectorAll('input[name="payment"]');
         const labelCod = document.getElementById('label-cod');
         const labelAdv = document.getElementById('label-advance');
@@ -223,11 +198,8 @@
             updateTotals();
           });
         });
-
-        // Form Submit - creates a real order in Google Sheets
         document.getElementById('checkout-form').addEventListener('submit', async (e) => {
           e.preventDefault();
-
           const submitBtn = document.querySelector('button[form="checkout-form"]');
           submitBtn.disabled = true;
           submitBtn.textContent = 'Placing order...';
@@ -252,8 +224,6 @@
             showCheckoutError(res.message);
             return;
           }
-
-          // Save the REAL order (returned by the backend) for the success page
           localStorage.setItem('furonix_last_order', JSON.stringify(res.data));
           localStorage.removeItem('furonix_cart');
 
