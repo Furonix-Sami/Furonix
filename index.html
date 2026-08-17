@@ -11,7 +11,6 @@
     <header id="shared-header"></header>
 
     <main>
-      <!-- Hero Section -->
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-xl relative overflow-hidden">
           <div class="relative z-10 max-w-lg mb-8 md:mb-0" id="hero-text" style="opacity:0; transition: opacity .25s ease;">
@@ -28,28 +27,23 @@
         </div>
       </section>
 
-      <!-- Category Pills -->
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold text-gray-900">Shop by Category</h2>
         </div>
         <div class="flex gap-3 overflow-x-auto pb-4 hide-scrollbar" id="category-pills">
-          <!-- Populated by JS -->
         </div>
       </section>
 
-      <!-- Featured Products -->
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-2xl font-extrabold text-slate-800">Featured Products</h2>
           <a href="shop.html" class="text-blue-600 font-bold hover:text-blue-700 text-sm">View All &rarr;</a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products">
-          <!-- Populated by JS -->
         </div>
       </section>
       
-      <!-- Banner -->
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
         <div class="bg-slate-900 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white">
           <div class="max-w-lg mb-8 md:mb-0">
@@ -72,7 +66,6 @@
     </main>
 
     <footer id="shared-footer"></footer>
-
     <style>
       .hide-scrollbar::-webkit-scrollbar {
         display: none;
@@ -90,19 +83,14 @@
       document.addEventListener('DOMContentLoaded', async () => {
         await loadFuronixData();
 
-        // Apply banner settings from the admin dashboard, if set
         const s = window.siteSettings || {};
         if (s.bannerHeading) document.getElementById('banner-heading').textContent = s.bannerHeading;
         if (s.bannerDescription) document.getElementById('banner-description').textContent = s.bannerDescription;
         if (s.bannerButtonText) document.getElementById('banner-button').textContent = s.bannerButtonText;
         if (s.bannerImage) document.getElementById('banner-image').src = driveImg(s.bannerImage);
 
-        // Reveal the hero text/image now that the real (or default) values
-        // are in place - this avoids any flash of placeholder content.
         document.getElementById('hero-text').style.opacity = '1';
         document.getElementById('hero-image-wrap').style.opacity = '1';
-
-        // Render Categories
         const catContainer = document.getElementById('category-pills');
         categories.forEach(cat => {
           const a = document.createElement('a');
@@ -114,7 +102,6 @@
           catContainer.appendChild(a);
         });
 
-        // Render Featured products (falls back to the first 4 if none are marked featured)
         const featuredContainer = document.getElementById('featured-products');
         if (sampleProducts.length === 0) {
           featuredContainer.innerHTML = '<p class="text-slate-400 col-span-full text-center py-10">No products yet.</p>';
