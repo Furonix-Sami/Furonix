@@ -149,7 +149,6 @@ const footerHTML = `
       <button class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">Cash on Delivery</button>
       <button class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-tighter">Advance Payment</button>
       <div class="hidden md:block h-4 w-[1px] bg-slate-200"></div>
-      <a href="admin/login.html" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 uppercase transition-colors">Admin Dashboard</a>
     </div>
   </div>
 </footer>
