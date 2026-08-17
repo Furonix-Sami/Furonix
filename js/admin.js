@@ -4,8 +4,19 @@
 
 // auth guard
 if (!getAdminToken()) {
-  window.location.href = 'login.html';
+  location.replace('login.html');
 }
+
+// Mobile browsers sometimes restore this page from the back/forward cache
+// (bfcache) without re-running the top-level checks above. This re-checks
+// the token whenever the page is shown that way (e.g. after Logout + Back).
+window.addEventListener('pageshow', function (event) {
+  const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+  if (isBackForward && !getAdminToken()) {
+    location.replace('login.html');
+  }
+});
 
 let currentCategories = [];
 let currentSettings = {};
@@ -16,7 +27,7 @@ async function adminGet(action, params) {
   let res = await apiGet(action, params);
   if (!res.success && res.message && res.message.indexOf('Unauthorized') !== -1) {
     clearAdminToken();
-    window.location.href = 'login.html';
+    location.replace('login.html');
   }
   return res;
 }
@@ -26,7 +37,7 @@ async function adminPost(action, data) {
   let res = await apiPost(action, data);
   if (!res.success && res.message && res.message.indexOf('Unauthorized') !== -1) {
     clearAdminToken();
-    window.location.href = 'login.html';
+    location.replace('login.html');
   }
   return res;
 }
@@ -68,7 +79,7 @@ async function initAdminDashboard() {
   document.getElementById('logout-link').addEventListener('click', (e) => {
     e.preventDefault();
     clearAdminToken();
-    window.location.href = 'login.html';
+    location.replace('login.html');
   });
 
   let catRes = await adminGet('getCategories');
@@ -265,7 +276,7 @@ function renderImagePreviews() {
   const urls = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
   box.innerHTML = urls.map((u, i) => `
     <div class="relative w-16 h-16">
-      <img src="${u}" class="w-16 h-16 object-cover rounded-lg border border-slate-200">
+      <img src="${driveImg(u)}" class="w-16 h-16 object-cover rounded-lg border border-slate-200">
       <button type="button" onclick="removeProductImage(${i})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs leading-none">&times;</button>
     </div>
   `).join('');
@@ -460,12 +471,50 @@ async function deleteCategoryConfirm(categoryId) {
 }
 
 // ============================================
+// ANNOUNCEMENT BAR
+// ============================================
+async function loadAnnouncement() {
+  const res = await adminGet('getSettings');
+  if (!res.success) { toast(res.message, true); return; }
+  document.getElementById('announcement-text').value = res.data.announcementText || '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('announcement-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('announcement-text').value.trim();
+      const res = await adminPost('updateSettings', { settings: { announcementText: text } });
+      if (!res.success) { toast(res.message, true); return; }
+      const msg = document.getElementById('announcement-saved-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 2500);
+      toast(text ? 'Announcement published' : 'Announcement bar hidden');
+    });
+  }
+
+  const pwForm = document.getElementById('change-password-form');
+  if (pwForm) {
+    pwForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const oldPassword = document.getElementById('cp-old-password').value;
+      const newPassword = document.getElementById('cp-new-password').value;
+      const res = await adminPost('changeAdminPassword', { oldPassword, newPassword });
+      if (!res.success) { toast(res.message, true); return; }
+      toast('Password updated successfully');
+      pwForm.reset();
+    });
+  }
+});
+
+// ============================================
 // SETTINGS
 // ============================================
 function setImagePreview(previewId, url) {
   const img = document.getElementById(previewId);
   if (!img) return;
-  if (url) { img.src = url; img.classList.remove('hidden'); }
+  if (url) { img.src = driveImg(url); img.classList.remove('hidden'); }
   else { img.classList.add('hidden'); }
 }
 
@@ -498,7 +547,6 @@ async function loadSettings() {
   document.getElementById('setting-instagram').value = s.instagramUrl || '';
 
   document.getElementById('setting-footer-text').value = s.footerText || '';
-  document.getElementById('setting-announcement').value = s.announcementText || '';
 
   document.getElementById('setting-cod-fee').value = s.codDeliveryCharge || 300;
   document.getElementById('setting-advance-fee').value = s.advanceDeliveryCharge || 250;
@@ -553,7 +601,6 @@ document.addEventListener('DOMContentLoaded', () => {
         instagramUrl: document.getElementById('setting-instagram').value.trim(),
 
         footerText: document.getElementById('setting-footer-text').value.trim(),
-        announcementText: document.getElementById('setting-announcement').value.trim(),
 
         codDeliveryCharge: document.getElementById('setting-cod-fee').value,
         advanceDeliveryCharge: document.getElementById('setting-advance-fee').value,
