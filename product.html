@@ -12,7 +12,6 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
       
-      <!-- Breadcrumbs -->
       <nav class="flex text-sm text-gray-500 mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center">
@@ -34,7 +33,6 @@
       </nav>
 
       <div id="product-container" class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 hidden">
-        <!-- Image Gallery -->
         <div class="flex flex-col gap-4">
           <div class="bg-white rounded-3xl p-8 aspect-square flex items-center justify-center border border-gray-100 shadow-sm relative overflow-hidden group">
             <img id="main-image" src="" alt="Product" class="object-cover max-h-full mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
@@ -42,7 +40,6 @@
           <div id="thumbnail-gallery" class="flex gap-3 overflow-x-auto pb-1"></div>
         </div>
 
-        <!-- Details -->
         <div class="flex flex-col">
           <p id="p-category" class="text-blue-600 font-semibold tracking-wide uppercase text-sm mb-2">Category</p>
           <h1 id="p-name" class="text-3xl md:text-4xl font-black text-slate-900 mb-6 leading-tight">Product Name</h1>
@@ -57,11 +54,9 @@
           <div class="mb-8">
             <h3 class="font-bold text-slate-900 mb-4 text-lg">Key Specifications</h3>
             <ul id="p-specs" class="space-y-2">
-              <!-- populated by JS -->
             </ul>
           </div>
 
-          <!-- Actions -->
           <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm mt-auto">
             <div class="flex items-center gap-4 mb-6">
               <span class="font-medium text-slate-700">Quantity</span>
@@ -85,7 +80,6 @@
         </div>
       </div>
 
-      <!-- Error State -->
       <div id="error-container" class="hidden py-20 text-center">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
         <a href="shop.html" class="text-indigo-600 hover:underline">Return to Shop</a>
@@ -110,11 +104,9 @@
         if (product) {
           document.getElementById('product-container').classList.remove('hidden');
           
-          // Populate data
           document.title = `${product.name} | Furonix`;
           document.getElementById('main-image').src = product.image;
 
-          // Thumbnail gallery (only shown when the product has more than one image)
           const gallery = document.getElementById('thumbnail-gallery');
           const galleryImages = (product.images && product.images.length > 0) ? product.images : [product.image];
           if (galleryImages.length > 1) {
@@ -124,7 +116,6 @@
                 <img src="${src}" class="w-full h-full object-cover mix-blend-multiply">
               </button>
             `).join('');
-            // Highlight the active thumbnail on click
             gallery.querySelectorAll('.thumb-btn').forEach(btn => {
               btn.addEventListener('click', () => {
                 gallery.querySelectorAll('.thumb-btn').forEach(b => b.classList.replace('border-blue-600', 'border-transparent'));
@@ -137,7 +128,6 @@
           document.getElementById('p-name').textContent = product.name;
           document.getElementById('p-price').textContent = `Rs. ${product.price.toLocaleString()}`;
           document.getElementById('p-desc').textContent = product.description;
-          
           document.getElementById('bc-category').textContent = product.category;
           document.getElementById('bc-category').href = `shop.html?category=${encodeURIComponent(product.category)}`;
           document.getElementById('bc-name').textContent = product.name;
@@ -153,8 +143,6 @@
               `;
             });
           }
-
-          // Qty Logic
           const qtyInput = document.getElementById('qty-input');
           document.getElementById('qty-minus').addEventListener('click', () => {
             let val = parseInt(qtyInput.value);
@@ -165,7 +153,6 @@
             if (val < Number(product.stock)) qtyInput.value = val + 1;
           });
 
-          // Action Logic
           if (Number(product.stock) <= 0) {
             document.getElementById('btn-add').disabled = true;
             document.getElementById('btn-buy').disabled = true;
