@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Admin Login | Furonix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../style.css">
@@ -45,7 +48,7 @@
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script>
-      if (getAdminToken()) window.location.href = 'dashboard.html';
+      if (getAdminToken()) location.replace('dashboard.html');
 
       document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -74,7 +77,7 @@
         }
 
         setAdminToken(res.data.token, res.data.username);
-        window.location.href = 'dashboard.html';
+        location.replace('dashboard.html');
       });
     </script>
   </body>
