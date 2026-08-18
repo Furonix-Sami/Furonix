@@ -12,17 +12,24 @@
 
     <main>
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 rounded-[2rem] p-5 md:p-6 flex flex-col md:flex-row items-center justify-between text-white shadow-xl relative overflow-hidden">
-          <div class="relative z-10 max-w-lg mb-8 md:mb-0" id="hero-text" style="opacity:0; transition: opacity .25s ease;">
-            <span class="bg-white/20 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest backdrop-blur-md">Limited Edition</span>
-            <h1 id="banner-heading" class="text-2xl md:text-4xl font-extrabold mt-3 leading-tight">Upgrade Your<br/>Tech Lifestyle.</h1>
-            <p id="banner-description" class="text-blue-100 text-sm md:text-base mt-4 opacity-90">Discover the latest Furonix S9 Series Smart Watches & Pro Audio.</p>
-            <a href="shop.html" id="banner-button" class="inline-block mt-6 bg-white text-blue-600 px-8 py-3 rounded-full text-sm font-bold shadow-lg hover:bg-blue-50 transition-colors">Explore All Gear</a>
+        <div class="bg-gradient-to-br from-emerald-50 via-green-100 to-emerald-50 rounded-2xl px-6 py-5 md:px-10 md:py-6 flex items-center justify-between relative overflow-hidden border border-emerald-100">
+          <!-- decorative wave shapes -->
+          <svg class="absolute -right-10 -top-10 w-64 h-64 text-emerald-200 opacity-70 pointer-events-none" viewBox="0 0 200 200" fill="currentColor">
+            <path d="M45.3,-58.5C58.4,-49.7,68.6,-35.7,72.4,-19.9C76.2,-4.1,73.6,13.5,65.6,28.1C57.6,42.6,44.2,54.1,29.1,61.2C14,68.3,-2.8,71,-19.2,67.6C-35.6,64.2,-51.7,54.7,-61.9,40.8C-72.1,26.9,-76.4,8.5,-73.6,-8.3C-70.8,-25.1,-60.9,-40.3,-47.6,-49.3C-34.3,-58.3,-17.1,-61.1,0.5,-61.7C18.2,-62.4,32.2,-67.3,45.3,-58.5Z" transform="translate(100 100)" />
+          </svg>
+          <svg class="absolute -left-16 -bottom-16 w-56 h-56 text-emerald-300 opacity-40 pointer-events-none" viewBox="0 0 200 200" fill="currentColor">
+            <path d="M45.3,-58.5C58.4,-49.7,68.6,-35.7,72.4,-19.9C76.2,-4.1,73.6,13.5,65.6,28.1C57.6,42.6,44.2,54.1,29.1,61.2C14,68.3,-2.8,71,-19.2,67.6C-35.6,64.2,-51.7,54.7,-61.9,40.8C-72.1,26.9,-76.4,8.5,-73.6,-8.3C-70.8,-25.1,-60.9,-40.3,-47.6,-49.3C-34.3,-58.3,-17.1,-61.1,0.5,-61.7C18.2,-62.4,32.2,-67.3,45.3,-58.5Z" transform="translate(100 100)" />
+          </svg>
+
+          <div class="relative z-10 max-w-md" id="hero-text" style="opacity:0; transition: opacity .25s ease;">
+            <span class="text-emerald-700 text-[10px] font-black tracking-widest uppercase">New Arrival</span>
+            <h1 id="banner-heading" class="text-xl md:text-3xl font-black text-slate-900 mt-1 leading-tight">Upgrade Your <span class="text-emerald-600">Tech</span> Lifestyle</h1>
+            <p id="banner-description" class="text-slate-600 text-xs md:text-sm mt-2">Discover the latest Furonix Smart Watches &amp; Pro Audio.</p>
+            <a href="shop.html" id="banner-button" class="inline-block mt-4 bg-emerald-600 text-white px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:bg-emerald-700 transition-colors">Buy Now</a>
           </div>
-          <div class="absolute right-0 top-0 h-full w-1/2 md:w-1/3 bg-white/10 skew-x-12 transform origin-bottom"></div>
-          <div class="w-48 h-48 bg-white/20 rounded-full blur-3xl absolute -bottom-10 -right-10 pointer-events-none"></div>
-          <div class="relative z-10 w-full max-w-xs md:max-w-sm ml-auto" id="hero-image-wrap" style="opacity:0; transition: opacity .25s ease;">
-            <img id="banner-image" src="" alt="Hero" class="w-full rounded-2xl shadow-2xl transform md:rotate-6 border-4 border-white/10">
+
+          <div class="relative z-10 w-40 md:w-56 shrink-0 hidden" id="hero-image-wrap" style="opacity:0; transition: opacity .25s ease;">
+            <img id="banner-image" src="" alt="Hero" class="w-full h-full object-contain drop-shadow-xl">
           </div>
         </div>
       </section>
@@ -68,10 +75,17 @@
         if (s.bannerHeading) document.getElementById('banner-heading').textContent = s.bannerHeading;
         if (s.bannerDescription) document.getElementById('banner-description').textContent = s.bannerDescription;
         if (s.bannerButtonText) document.getElementById('banner-button').textContent = s.bannerButtonText;
-        if (s.bannerImage) document.getElementById('banner-image').src = driveImg(s.bannerImage);
+
+        // Only show the image slot if an admin has actually uploaded a banner
+        // image - no default/placeholder picture is shown otherwise.
+        if (s.bannerImage) {
+          document.getElementById('banner-image').src = driveImg(s.bannerImage);
+          document.getElementById('hero-image-wrap').classList.remove('hidden');
+        }
 
         document.getElementById('hero-text').style.opacity = '1';
         document.getElementById('hero-image-wrap').style.opacity = '1';
+
         const catContainer = document.getElementById('category-pills');
         categories.forEach(cat => {
           const a = document.createElement('a');
