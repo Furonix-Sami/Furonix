@@ -6,6 +6,17 @@
     <title>Furonix | Premium Smart Electronics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+      :root {
+        --theme-color: #3b82f6;
+        --button-color: #3b82f6;
+        --text-color: #1e293b;
+      }
+      body { color: var(--text-color); }
+      .theme-bg { background-color: var(--theme-color); }
+      .button-bg { background-color: var(--button-color); }
+      .theme-text { color: var(--theme-color); }
+    </style>
   </head>
   <body>
     <header id="shared-header"></header>
@@ -45,7 +56,7 @@
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-2xl font-extrabold text-slate-800">Featured Products</h2>
-          <a href="shop.html" class="text-blue-600 font-bold hover:text-blue-700 text-sm">View All &rarr;</a>
+          <a href="shop.html" class="theme-text font-bold hover:opacity-80 text-sm">View All &rarr;</a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products">
         </div>
@@ -72,14 +83,30 @@
         await loadFuronixData();
 
         const s = window.siteSettings || {};
+        
+        // 1. APPLY DYNAMIC COLORS
+        if (s.themeColor) document.documentElement.style.setProperty('--theme-color', s.themeColor);
+        if (s.buttonColor) {
+          document.documentElement.style.setProperty('--button-color', s.buttonColor);
+          const bannerBtn = document.getElementById('banner-button');
+          if (bannerBtn) bannerBtn.style.backgroundColor = s.buttonColor;
+        }
+        if (s.textColor) document.documentElement.style.setProperty('--text-color', s.textColor);
+
+        // 2. APPLY BANNER SETTINGS (With Size Control)
         if (s.bannerHeading) document.getElementById('banner-heading').textContent = s.bannerHeading;
         if (s.bannerDescription) document.getElementById('banner-description').textContent = s.bannerDescription;
         if (s.bannerButtonText) document.getElementById('banner-button').textContent = s.bannerButtonText;
 
-        // Only show the image slot if an admin has actually uploaded a banner
-        // image - no default/placeholder picture is shown otherwise.
         if (s.bannerImage) {
-          document.getElementById('banner-image').src = driveImg(s.bannerImage);
+          const bannerImg = document.getElementById('banner-image');
+          bannerImg.src = driveImg(s.bannerImage);
+          if (s.bannerHeight) {
+            bannerImg.style.height = s.bannerHeight + 'px';
+          }
+          if (s.bannerFit) {
+            bannerImg.style.objectFit = s.bannerFit;
+          }
           document.getElementById('hero-image-wrap').classList.remove('hidden');
         }
 
@@ -91,8 +118,8 @@
           const a = document.createElement('a');
           a.href = `shop.html?category=${encodeURIComponent(cat)}`;
           a.className = cat === 'All' 
-            ? 'whitespace-nowrap px-5 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold shadow-md'
-            : 'whitespace-nowrap px-5 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-full text-xs font-semibold hover:border-blue-300 hover:text-blue-600 transition-colors';
+            ? 'whitespace-nowrap px-5 py-1.5 button-bg text-white rounded-full text-xs font-bold shadow-md'
+            : 'whitespace-nowrap px-5 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-full text-xs font-semibold hover:opacity-80 transition-colors';
           a.textContent = cat;
           catContainer.appendChild(a);
         });
@@ -107,7 +134,48 @@
             featuredContainer.innerHTML += createProductCard(product);
           });
         }
+
+        // 3. CUSTOMER POPUP MESSAGE BOX
+        if (s.popupEnabled === 'true' || s.popupEnabled === true) {
+          if (!sessionStorage.getItem('furonix_popup_closed')) {
+            showFuronixPopup(s);
+          }
+        }
+
+        // 4. ADD YOUTUBE & TIKTOK TO FOOTER (If exists)
+        const footer = document.getElementById('shared-footer');
+        if (footer) {
+          setTimeout(() => {
+            if (s.youtubeUrl) {
+              footer.insertAdjacentHTML('beforeend', `<a href="${s.youtubeUrl}" target="_blank" style="color:#ff0000; font-size:24px; margin-left:10px;">▶</a>`);
+            }
+            if (s.tiktokUrl) {
+              footer.insertAdjacentHTML('beforeend', `<a href="${s.tiktokUrl}" target="_blank" style="color:#000000; font-size:24px; margin-left:10px;">🎵</a>`);
+            }
+          }, 1500); // 1.5 seconds wait for footer to load
+        }
       });
+
+      // Popup Functions
+      function showFuronixPopup(s) {
+        const popupHTML = `
+          <div id="furonix-popup-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
+            <div style="background:#fff; padding:40px; border-radius:20px; max-width:400px; width:100%; text-align:center; position:relative; font-family:sans-serif;">
+              <span onclick="closeFuronixPopup()" style="position:absolute; top:10px; right:15px; font-size:28px; cursor:pointer; color:#94a3b8; font-weight:bold;">&times;</span>
+              <h3 style="font-size:24px; font-weight:800; color:${s.themeColor || '#000'}; margin-bottom:15px;">${s.popupTitle || 'Special Offer'}</h3>
+              <p style="color:#475569; margin-bottom:25px; line-height:1.5;">${s.popupMessage || ''}</p>
+              ${s.popupLink ? `<a href="${s.popupLink}" style="background:${s.buttonColor || '#000'}; color:#fff; padding:12px 30px; border-radius:30px; text-decoration:none; font-weight:bold; display:inline-block;">Shop Now</a>` : ''}
+            </div>
+          </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', popupHTML);
+      }
+
+      function closeFuronixPopup() {
+        const popup = document.getElementById('furonix-popup-overlay');
+        if (popup) popup.remove();
+        sessionStorage.setItem('furonix_popup_closed', 'true');
+      }
     </script>
   </body>
 </html>
