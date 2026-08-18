@@ -1,4 +1,3 @@
-// Global Cart Logic
 let cart = JSON.parse(localStorage.getItem('furonix_cart')) || [];
 
 function saveCart() {
@@ -22,13 +21,11 @@ function addToCart(productId, quantity = 1) {
   }
   saveCart();
   
-  // Show a simple toast or alert (using alert for simplicity per standard DOM)
   const toast = document.createElement('div');
   toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg z-50 transform transition-transform duration-300 translate-y-10 opacity-0';
   toast.textContent = `${product.name} added to cart!`;
   document.body.appendChild(toast);
   
-  // Animate in
   setTimeout(() => {
     toast.classList.remove('translate-y-10', 'opacity-0');
   }, 10);
@@ -59,7 +56,6 @@ function updateCartCount() {
   });
 }
 
-// Generate product card HTML
 function createProductCard(product) {
   const inStock = Number(product.stock) > 0;
   return `
@@ -85,7 +81,6 @@ function createProductCard(product) {
   `;
 }
 
-// Shared Navbar HTML to inject
 const navbarHTML = `
 <nav class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between shadow-sm shrink-0 z-50 sticky top-0">
   <div class="flex items-center gap-8">
@@ -154,19 +149,14 @@ const footerHTML = `
 </footer>
 `;
 
-// Applies branding/design settings (loaded from the Settings sheet) to any
-// page that has already injected the shared navbar/footer. Safe to call
-// even if a setting is empty - it just leaves the default in place.
 function applySiteSettings() {
   const s = window.siteSettings || {};
 
-  // Page title / brand name
   if (s.brandName) {
     const logoLink = document.getElementById('brand-logo-link');
     if (logoLink && !s.logo) logoLink.textContent = s.brandName;
   }
 
-  // Logo
   const logoLink2 = document.getElementById('brand-logo-link');
   if (logoLink2 && s.logo) {
     logoLink2.innerHTML = `<img src="${driveImg(s.logo)}" alt="${s.brandName || 'Logo'}" class="h-8 w-auto object-contain">`;
@@ -183,7 +173,6 @@ function applySiteSettings() {
     favEl.href = driveImg(s.favicon);
   }
 
-  // Theme / button colors - override the Tailwind blue utility classes site-wide
   const brand = s.themeColor || '';
   const btn = s.buttonColor || brand;
   if (brand || btn) {
@@ -201,7 +190,6 @@ function applySiteSettings() {
     `;
   }
 
-  // Footer contact / copyright / social links
   const footerContact = document.getElementById('footer-contact');
   if (footerContact) {
     const bits = [s.phone, s.email].filter(Boolean);
@@ -219,7 +207,6 @@ function applySiteSettings() {
     footerSocial.innerHTML = icons;
   }
 
-  // Announcement bar
   if (s.announcementText) {
     let bar = document.getElementById('announcement-bar');
     if (!bar) {
@@ -232,34 +219,17 @@ function applySiteSettings() {
     bar.textContent = s.announcementText;
   }
 
-  // Floating WhatsApp button
-  if (s.whatsapp) {
-    let wa = document.getElementById('whatsapp-float-btn');
-    if (!wa) {
-      wa = document.createElement('a');
-      wa.id = 'whatsapp-float-btn';
-      wa.target = '_blank';
-      wa.rel = 'noopener';
-      wa.className = 'fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-colors';
-      wa.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.4 1.3-1.93 1.34-.5.05-1.02.24-3.44-.72-2.9-1.16-4.77-4.1-4.92-4.29-.15-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.14.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.37-.44.5-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.13.63-.08.17-.2.72-.84.91-1.13.19-.29.39-.24.65-.14.27.1 1.69.8 1.98.94.29.15.48.22.55.34.07.13.07.75-.17 1.43z"/></svg>`;
-      document.body.appendChild(wa);
-    }
-    wa.href = `https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}`;
-  }
-}
+
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inject navbar and footer
   const headerElem = document.getElementById('shared-header');
   if (headerElem) headerElem.innerHTML = navbarHTML;
   
   const footerElem = document.getElementById('shared-footer');
   if (footerElem) footerElem.innerHTML = footerHTML;
 
-  // Initialize cart count
   updateCartCount();
 
-  // Mobile menu toggle
   const menuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
   if (menuBtn && mobileMenu) {
@@ -268,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Global search
   const searchInput = document.getElementById('global-search');
   if (searchInput) {
     searchInput.addEventListener('keypress', (e) => {
@@ -278,9 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Apply branding/design settings once they're loaded by the page
-  // (loadFuronixData sets window.siteSettings). Each page already calls
-  // loadFuronixData() itself, so we just wait for it here too.
   if (typeof loadFuronixData === 'function') {
     loadFuronixData().then(() => applySiteSettings());
   }
