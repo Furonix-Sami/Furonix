@@ -15,6 +15,16 @@
 // 6. Deployment:
 //       Execute as: Me
 //       Who has access: Anyone
+// 7. Product image upload ke liye apna khud ka Google Drive folder set
+//    karna ZAROORI hai. Apps Script editor mein ek baar ye run karein
+//    (function ke andar apna folder ID daal kar):
+//
+//       function myDriveSetup() {
+//         setUploadFolderId("YOUR_GOOGLE_DRIVE_FOLDER_ID_HERE");
+//       }
+//
+//    Folder ID us URL se milta hai: drive.google.com/drive/folders/<ID_YAHAN_HAI>
+//    Jab tak ye set nahi hoga, image upload error dega.
 // ============================================================
 
 
@@ -65,6 +75,57 @@ function getSalt() {
   }
 
   return salt;
+}
+
+
+// ============================================================
+// GOOGLE DRIVE UPLOAD FOLDER
+// ============================================================
+//
+// Har naye deployment ko apna khud ka Drive folder ID set karna
+// hota hai (har developer ka Drive account alag hota hai, isliye
+// ye ab code mein hardcoded nahi hai). Run this once from the
+// Apps Script editor:
+//
+//   function myDriveSetup() {
+//     setUploadFolderId("YOUR_GOOGLE_DRIVE_FOLDER_ID_HERE");
+//   }
+//
+// ============================================================
+
+function setUploadFolderId(folderId) {
+
+  if (!folderId) {
+
+    throw new Error(
+      "folderId is required"
+    );
+
+  }
+
+  PropertiesService
+    .getScriptProperties()
+    .setProperty(
+      "UPLOAD_FOLDER_ID",
+      String(folderId)
+    );
+
+  Logger.log(
+    "Upload folder ID saved successfully."
+  );
+
+}
+
+
+function getUploadFolderId() {
+
+  var folderId =
+    PropertiesService
+      .getScriptProperties()
+      .getProperty("UPLOAD_FOLDER_ID");
+
+  return folderId || "";
+
 }
 
 
@@ -524,6 +585,34 @@ function adminLogin(body) {
   }
 
 
+  // ==========================================================
+  // BRUTE-FORCE LOCKOUT
+  // This endpoint is public, so without a limit someone could
+  // script thousands of password guesses. After 5 failed
+  // attempts for a username, block further tries for 15 minutes.
+  // ==========================================================
+
+  var cache =
+    CacheService.getScriptCache();
+
+  var cacheKey =
+    "loginFail_" + username;
+
+  var failCount =
+    Number(
+      cache.get(cacheKey) || 0
+    );
+
+
+  if (failCount >= 5) {
+
+    return fail(
+      "Too many failed login attempts. Please try again in 15 minutes."
+    );
+
+  }
+
+
   var sheet =
     getSheet("Admin");
 
@@ -567,6 +656,9 @@ function adminLogin(body) {
         hashPassword(password)
       ) {
 
+        // Successful login - reset the failure counter.
+        cache.remove(cacheKey);
+
         return ok(
           "Login successful",
           {
@@ -580,6 +672,16 @@ function adminLogin(body) {
     }
 
   }
+
+
+  // Failed login - remember it for 15 minutes so we can
+  // lock the account out after too many attempts.
+
+  cache.put(
+    cacheKey,
+    String(failCount + 1),
+    900
+  );
 
 
   return fail(
@@ -1553,6 +1655,46 @@ function deleteCategory(body) {
   }
 
 
+  // Find the category's name so we can check
+  // whether any product still belongs to it.
+
+  var categoryName =
+    sheet
+      .getRange(rowIndex, 2)
+      .getValue();
+
+
+  var products =
+    sheetToObjects(
+      getSheet("Products")
+    );
+
+
+  var productsInCategory =
+    products.filter(
+      function (p) {
+
+        return (
+          String(p.category) ===
+          String(categoryName)
+        );
+
+      }
+    ).length;
+
+
+  if (productsInCategory > 0) {
+
+    return fail(
+      "Cannot delete this category: " +
+      productsInCategory +
+      " product(s) are still assigned to it. " +
+      "Move or delete those products first, or set the category to inactive instead."
+    );
+
+  }
+
+
   sheet.deleteRow(
     rowIndex
   );
@@ -1570,6 +1712,43 @@ function deleteCategory(body) {
 // ============================================================
 
 function createOrder(body) {
+
+  // ==========================================================
+  // CONCURRENCY LOCK
+  // Multiple customers can hit this endpoint at the exact same
+  // time. Without a lock, two orders could both read the same
+  // stock number and both succeed, overselling the product.
+  // We lock around the whole read-check-write sequence below.
+  // ==========================================================
+
+  var lock =
+    LockService.getScriptLock();
+
+  try {
+
+    lock.waitLock(15000);
+
+  } catch (lockError) {
+
+    return fail(
+      "Server is busy, please try placing your order again in a few seconds"
+    );
+
+  }
+
+  try {
+
+    return createOrderInternal(body);
+
+  } finally {
+
+    lock.releaseLock();
+
+  }
+}
+
+
+function createOrderInternal(body) {
 
   if (
     !body.customerName ||
@@ -2144,6 +2323,35 @@ function getOrder(orderId) {
 
 function updateOrderStatus(body) {
 
+  var lock =
+    LockService.getScriptLock();
+
+  try {
+
+    lock.waitLock(15000);
+
+  } catch (lockError) {
+
+    return fail(
+      "Server is busy, please try again in a few seconds"
+    );
+
+  }
+
+  try {
+
+    return updateOrderStatusInternal(body);
+
+  } finally {
+
+    lock.releaseLock();
+
+  }
+}
+
+
+function updateOrderStatusInternal(body) {
+
   if (
     !body.orderId ||
     !body.status
@@ -2628,7 +2836,17 @@ function uploadProductImage(body) {
   try {
 
     var folderId =
-      "12nAN0YBhRbQ5GiiJ6Hhdq3JY_kUhywTq";
+      getUploadFolderId();
+
+
+    if (!folderId) {
+
+      return fail(
+        "Upload folder is not configured. In the Apps Script editor, run " +
+        "setUploadFolderId('YOUR_DRIVE_FOLDER_ID') once, then try again."
+      );
+
+    }
 
 
     if (!body.base64Data) {

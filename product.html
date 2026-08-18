@@ -111,13 +111,14 @@
           const galleryImages = (product.images && product.images.length > 0) ? product.images : [product.image];
           if (galleryImages.length > 1) {
             gallery.innerHTML = galleryImages.map((src, i) => `
-              <button type="button" onclick="document.getElementById('main-image').src='${src}'"
+              <button type="button" data-src="${escapeHtml(src)}"
                 class="w-16 h-16 shrink-0 rounded-xl border-2 ${i === 0 ? 'border-blue-600' : 'border-transparent'} bg-white overflow-hidden thumb-btn">
-                <img src="${src}" class="w-full h-full object-cover mix-blend-multiply">
+                <img src="${escapeHtml(src)}" class="w-full h-full object-cover mix-blend-multiply">
               </button>
             `).join('');
             gallery.querySelectorAll('.thumb-btn').forEach(btn => {
               btn.addEventListener('click', () => {
+                document.getElementById('main-image').src = btn.getAttribute('data-src');
                 gallery.querySelectorAll('.thumb-btn').forEach(b => b.classList.replace('border-blue-600', 'border-transparent'));
                 btn.classList.replace('border-transparent', 'border-blue-600');
               });
@@ -138,7 +139,7 @@
               specsUl.innerHTML += `
                 <li class="flex items-center gap-3 text-slate-700">
                   <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                  ${spec}
+                  ${escapeHtml(spec)}
                 </li>
               `;
             });
