@@ -145,13 +145,13 @@ let productsCache = [];
 
 async function loadProducts() {
   const body = document.getElementById('products-table-body');
-  body.innerHTML = `<tr><td class="px-6 py-4 text-slate-400" colspan="6">Loading...</td></tr>`;
+  body.innerHTML = `<tr><td class="px-6 py-4 text-slate-400" colspan="7">Loading...</td></tr>`;
   const search = document.getElementById('product-search').value;
   const res = await adminGet('getProducts', { search: search });
-  if (!res.success) { body.innerHTML = `<tr><td class="px-6 py-4 text-red-500" colspan="6">${res.message}</td></tr>`; return; }
+  if (!res.success) { body.innerHTML = `<tr><td class="px-6 py-4 text-red-500" colspan="7">${res.message}</td></tr>`; return; }
   productsCache = res.data;
   if (productsCache.length === 0) {
-    body.innerHTML = `<tr><td class="px-6 py-4 text-slate-400" colspan="6">No products found.</td></tr>`;
+    body.innerHTML = `<tr><td class="px-6 py-4 text-slate-400" colspan="7">No products found.</td></tr>`;
     return;
   }
   body.innerHTML = productsCache.map(p => `
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// SETTINGS
+// SETTINGS (With Full Control Features)
 // ============================================
 function setImagePreview(previewId, url) {
   const img = document.getElementById(previewId);
@@ -518,12 +518,21 @@ function setImagePreview(previewId, url) {
   else { img.classList.add('hidden'); }
 }
 
+// Naya Function: Image Remove karne ke liye
+function removeImage(type) {
+  document.getElementById(`setting-${type}-url`).value = '';
+  const fileInput = document.getElementById(`setting-${type}-file`);
+  if(fileInput) fileInput.value = '';
+  setImagePreview(`setting-${type}-preview`, '');
+}
+
 async function loadSettings() {
   const res = await adminGet('getSettings');
   if (!res.success) { toast(res.message, true); return; }
   currentSettings = res.data;
   const s = currentSettings;
 
+  // Branding
   document.getElementById('setting-brand-name').value = s.brandName || '';
   document.getElementById('setting-logo-url').value = s.logo || '';
   setImagePreview('setting-logo-preview', s.logo);
@@ -531,23 +540,37 @@ async function loadSettings() {
   setImagePreview('setting-favicon-preview', s.favicon);
   document.getElementById('setting-store-description').value = s.storeDescription || '';
 
+  // Colors (Naya: Text Color added)
   document.getElementById('setting-theme-color').value = s.themeColor || '#2563eb';
   document.getElementById('setting-button-color').value = s.buttonColor || '#2563eb';
+  document.getElementById('setting-text-color').value = s.textColor || '#1e293b';
 
+  // Banner (Naya: Height & Object Fit added)
   document.getElementById('setting-banner-url').value = s.bannerImage || '';
   setImagePreview('setting-banner-preview', s.bannerImage);
   document.getElementById('setting-banner-heading').value = s.bannerHeading || '';
   document.getElementById('setting-banner-description').value = s.bannerDescription || '';
   document.getElementById('setting-banner-button-text').value = s.bannerButtonText || '';
+  document.getElementById('setting-banner-height').value = s.bannerHeight || '';
+  document.getElementById('setting-banner-fit').value = s.bannerFit || 'cover';
 
+  // Popup Message Box (Naya Feature)
+  document.getElementById('setting-popup-title').value = s.popupTitle || '';
+  document.getElementById('setting-popup-message').value = s.popupMessage || '';
+  document.getElementById('setting-popup-link').value = s.popupLink || '';
+  document.getElementById('setting-popup-enabled').checked = (s.popupEnabled === 'true' || s.popupEnabled === true);
+
+  // Contact & Social (Naya: YouTube & TikTok added)
   document.getElementById('setting-phone').value = s.phone || '';
   document.getElementById('setting-email').value = s.email || '';
   document.getElementById('setting-whatsapp').value = s.whatsapp || '';
   document.getElementById('setting-facebook').value = s.facebookUrl || '';
   document.getElementById('setting-instagram').value = s.instagramUrl || '';
+  document.getElementById('setting-youtube').value = s.youtubeUrl || '';
+  document.getElementById('setting-tiktok').value = s.tiktokUrl || '';
 
+  // Footer & Delivery
   document.getElementById('setting-footer-text').value = s.footerText || '';
-
   document.getElementById('setting-cod-fee').value = s.codDeliveryCharge || 300;
   document.getElementById('setting-advance-fee').value = s.advanceDeliveryCharge || 250;
   document.getElementById('setting-advance-method').value = s.advancePaymentMethod || '';
@@ -588,17 +611,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         themeColor: document.getElementById('setting-theme-color').value,
         buttonColor: document.getElementById('setting-button-color').value,
+        textColor: document.getElementById('setting-text-color').value,
 
         bannerImage: document.getElementById('setting-banner-url').value.trim(),
         bannerHeading: document.getElementById('setting-banner-heading').value.trim(),
         bannerDescription: document.getElementById('setting-banner-description').value.trim(),
         bannerButtonText: document.getElementById('setting-banner-button-text').value.trim(),
+        bannerHeight: document.getElementById('setting-banner-height').value.trim(),
+        bannerFit: document.getElementById('setting-banner-fit').value,
+
+        popupTitle: document.getElementById('setting-popup-title').value.trim(),
+        popupMessage: document.getElementById('setting-popup-message').value.trim(),
+        popupLink: document.getElementById('setting-popup-link').value.trim(),
+        popupEnabled: document.getElementById('setting-popup-enabled').checked ? 'true' : 'false',
 
         phone: document.getElementById('setting-phone').value.trim(),
         email: document.getElementById('setting-email').value.trim(),
         whatsapp: document.getElementById('setting-whatsapp').value.trim(),
         facebookUrl: document.getElementById('setting-facebook').value.trim(),
         instagramUrl: document.getElementById('setting-instagram').value.trim(),
+        youtubeUrl: document.getElementById('setting-youtube').value.trim(),
+        tiktokUrl: document.getElementById('setting-tiktok').value.trim(),
 
         footerText: document.getElementById('setting-footer-text').value.trim(),
 
