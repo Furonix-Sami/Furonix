@@ -507,9 +507,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
 // ============================================
-// SETTINGS (With Full Control Features)
+// SETTINGS (With Full Control Features & Crash-Proof)
 // ============================================
 function setImagePreview(previewId, url) {
   const img = document.getElementById(previewId);
@@ -520,10 +519,23 @@ function setImagePreview(previewId, url) {
 
 // Naya Function: Image Remove karne ke liye
 function removeImage(type) {
-  document.getElementById(`setting-${type}-url`).value = '';
+  const urlInput = document.getElementById(`setting-${type}-url`);
   const fileInput = document.getElementById(`setting-${type}-file`);
+  if(urlInput) urlInput.value = '';
   if(fileInput) fileInput.value = '';
   setImagePreview(`setting-${type}-preview`, '');
+}
+
+// Safe Helper: Value get karne ke liye (agar input na ho to error nahi dega)
+function getInputVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+// Safe Helper: Value set karne ke liye
+function setInputVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val || '';
 }
 
 async function loadSettings() {
@@ -533,52 +545,53 @@ async function loadSettings() {
   const s = currentSettings;
 
   // Branding
-  document.getElementById('setting-brand-name').value = s.brandName || '';
-  document.getElementById('setting-logo-url').value = s.logo || '';
+  setInputVal('setting-brand-name', s.brandName);
+  setInputVal('setting-logo-url', s.logo);
   setImagePreview('setting-logo-preview', s.logo);
-  document.getElementById('setting-favicon-url').value = s.favicon || '';
+  setInputVal('setting-favicon-url', s.favicon);
   setImagePreview('setting-favicon-preview', s.favicon);
-  document.getElementById('setting-store-description').value = s.storeDescription || '';
+  setInputVal('setting-store-description', s.storeDescription);
 
-  // Colors (Naya: Text Color added)
-  document.getElementById('setting-theme-color').value = s.themeColor || '#2563eb';
-  document.getElementById('setting-button-color').value = s.buttonColor || '#2563eb';
-  document.getElementById('setting-text-color').value = s.textColor || '#1e293b';
+  // Colors
+  setInputVal('setting-theme-color', s.themeColor || '#2563eb');
+  setInputVal('setting-button-color', s.buttonColor || '#2563eb');
+  setInputVal('setting-text-color', s.textColor || '#1e293b');
 
-  // Banner (Naya: Height & Object Fit added)
-  document.getElementById('setting-banner-url').value = s.bannerImage || '';
+  // Banner Settings
+  setInputVal('setting-banner-url', s.bannerImage);
   setImagePreview('setting-banner-preview', s.bannerImage);
-  document.getElementById('setting-banner-heading').value = s.bannerHeading || '';
-  document.getElementById('setting-banner-description').value = s.bannerDescription || '';
-  document.getElementById('setting-banner-button-text').value = s.bannerButtonText || '';
-  document.getElementById('setting-banner-height').value = s.bannerHeight || '';
-  document.getElementById('setting-banner-fit').value = s.bannerFit || 'cover';
+  setInputVal('setting-banner-heading', s.bannerHeading);
+  setInputVal('setting-banner-description', s.bannerDescription);
+  setInputVal('setting-banner-button-text', s.bannerButtonText);
+  setInputVal('setting-banner-height', s.bannerHeight);
+  setInputVal('setting-banner-fit', s.bannerFit || 'cover');
 
-  // Popup Message Box (Naya Feature)
-  document.getElementById('setting-popup-title').value = s.popupTitle || '';
-  document.getElementById('setting-popup-message').value = s.popupMessage || '';
-  document.getElementById('setting-popup-link').value = s.popupLink || '';
-  document.getElementById('setting-popup-enabled').checked = (s.popupEnabled === 'true' || s.popupEnabled === true);
+  // Popup Message Box
+  setInputVal('setting-popup-title', s.popupTitle);
+  setInputVal('setting-popup-message', s.popupMessage);
+  setInputVal('setting-popup-link', s.popupLink);
+  const popupChk = document.getElementById('setting-popup-enabled');
+  if (popupChk) popupChk.checked = (s.popupEnabled === 'true' || s.popupEnabled === true);
 
-  // Contact & Social (Naya: YouTube & TikTok added)
-  document.getElementById('setting-phone').value = s.phone || '';
-  document.getElementById('setting-email').value = s.email || '';
-  document.getElementById('setting-whatsapp').value = s.whatsapp || '';
-  document.getElementById('setting-facebook').value = s.facebookUrl || '';
-  document.getElementById('setting-instagram').value = s.instagramUrl || '';
-  document.getElementById('setting-youtube').value = s.youtubeUrl || '';
-  document.getElementById('setting-tiktok').value = s.tiktokUrl || '';
+  // Contact & Social
+  setInputVal('setting-phone', s.phone);
+  setInputVal('setting-email', s.email);
+  setInputVal('setting-whatsapp', s.whatsapp);
+  setInputVal('setting-facebook', s.facebookUrl);
+  setInputVal('setting-instagram', s.instagramUrl);
+  setInputVal('setting-youtube', s.youtubeUrl);
+  setInputVal('setting-tiktok', s.tiktokUrl);
 
   // Footer & Delivery
-  document.getElementById('setting-footer-text').value = s.footerText || '';
-  document.getElementById('setting-cod-fee').value = s.codDeliveryCharge || 300;
-  document.getElementById('setting-advance-fee').value = s.advanceDeliveryCharge || 250;
-  document.getElementById('setting-advance-method').value = s.advancePaymentMethod || '';
-  document.getElementById('setting-account-title').value = s.advanceAccountTitle || '';
-  document.getElementById('setting-account-number').value = s.advanceAccountNumber || '';
-  document.getElementById('setting-instructions').value = s.advancePaymentInstructions || '';
-  document.getElementById('setting-currency').value = s.currency || 'Rs.';
-  document.getElementById('setting-low-stock-limit').value = s.lowStockLimit || 5;
+  setInputVal('setting-footer-text', s.footerText);
+  setInputVal('setting-cod-fee', s.codDeliveryCharge || 300);
+  setInputVal('setting-advance-fee', s.advanceDeliveryCharge || 250);
+  setInputVal('setting-advance-method', s.advancePaymentMethod);
+  setInputVal('setting-account-title', s.advanceAccountTitle);
+  setInputVal('setting-account-number', s.advanceAccountNumber);
+  setInputVal('setting-instructions', s.advancePaymentInstructions);
+  setInputVal('setting-currency', s.currency || 'Rs.');
+  setInputVal('setting-low-stock-limit', s.lowStockLimit || 5);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -591,9 +604,12 @@ document.addEventListener('DOMContentLoaded', () => {
       toast('Uploading image...');
       const url = await uploadImageFile(file);
       if (url) {
-        document.getElementById(`setting-${kind}-url`).value = url;
-        setImagePreview(`setting-${kind}-preview`, url);
-        toast('Image uploaded');
+        const urlField = document.getElementById(`setting-${kind}-url`);
+        if (urlField) {
+          urlField.value = url;
+          setImagePreview(`setting-${kind}-preview`, url);
+          toast('Image uploaded');
+        }
       }
       e.target.value = '';
     });
@@ -604,52 +620,54 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const settings = {
-        brandName: document.getElementById('setting-brand-name').value.trim(),
-        logo: document.getElementById('setting-logo-url').value.trim(),
-        favicon: document.getElementById('setting-favicon-url').value.trim(),
-        storeDescription: document.getElementById('setting-store-description').value.trim(),
+        brandName: getInputVal('setting-brand-name'),
+        logo: getInputVal('setting-logo-url'),
+        favicon: getInputVal('setting-favicon-url'),
+        storeDescription: getInputVal('setting-store-description'),
 
-        themeColor: document.getElementById('setting-theme-color').value,
-        buttonColor: document.getElementById('setting-button-color').value,
-        textColor: document.getElementById('setting-text-color').value,
+        themeColor: getInputVal('setting-theme-color'),
+        buttonColor: getInputVal('setting-button-color'),
+        textColor: getInputVal('setting-text-color'),
 
-        bannerImage: document.getElementById('setting-banner-url').value.trim(),
-        bannerHeading: document.getElementById('setting-banner-heading').value.trim(),
-        bannerDescription: document.getElementById('setting-banner-description').value.trim(),
-        bannerButtonText: document.getElementById('setting-banner-button-text').value.trim(),
-        bannerHeight: document.getElementById('setting-banner-height').value.trim(),
-        bannerFit: document.getElementById('setting-banner-fit').value,
+        bannerImage: getInputVal('setting-banner-url'),
+        bannerHeading: getInputVal('setting-banner-heading'),
+        bannerDescription: getInputVal('setting-banner-description'),
+        bannerButtonText: getInputVal('setting-banner-button-text'),
+        bannerHeight: getInputVal('setting-banner-height'),
+        bannerFit: getInputVal('setting-banner-fit'),
 
-        popupTitle: document.getElementById('setting-popup-title').value.trim(),
-        popupMessage: document.getElementById('setting-popup-message').value.trim(),
-        popupLink: document.getElementById('setting-popup-link').value.trim(),
-        popupEnabled: document.getElementById('setting-popup-enabled').checked ? 'true' : 'false',
+        popupTitle: getInputVal('setting-popup-title'),
+        popupMessage: getInputVal('setting-popup-message'),
+        popupLink: getInputVal('setting-popup-link'),
+        popupEnabled: document.getElementById('setting-popup-enabled') ? document.getElementById('setting-popup-enabled').checked : false,
 
-        phone: document.getElementById('setting-phone').value.trim(),
-        email: document.getElementById('setting-email').value.trim(),
-        whatsapp: document.getElementById('setting-whatsapp').value.trim(),
-        facebookUrl: document.getElementById('setting-facebook').value.trim(),
-        instagramUrl: document.getElementById('setting-instagram').value.trim(),
-        youtubeUrl: document.getElementById('setting-youtube').value.trim(),
-        tiktokUrl: document.getElementById('setting-tiktok').value.trim(),
+        phone: getInputVal('setting-phone'),
+        email: getInputVal('setting-email'),
+        whatsapp: getInputVal('setting-whatsapp'),
+        facebookUrl: getInputVal('setting-facebook'),
+        instagramUrl: getInputVal('setting-instagram'),
+        youtubeUrl: getInputVal('setting-youtube'),
+        tiktokUrl: getInputVal('setting-tiktok'),
 
-        footerText: document.getElementById('setting-footer-text').value.trim(),
+        footerText: getInputVal('setting-footer-text'),
 
-        codDeliveryCharge: document.getElementById('setting-cod-fee').value,
-        advanceDeliveryCharge: document.getElementById('setting-advance-fee').value,
-        advancePaymentMethod: document.getElementById('setting-advance-method').value,
-        advanceAccountTitle: document.getElementById('setting-account-title').value,
-        advanceAccountNumber: document.getElementById('setting-account-number').value,
-        advancePaymentInstructions: document.getElementById('setting-instructions').value,
-        currency: document.getElementById('setting-currency').value.trim() || 'Rs.',
-        lowStockLimit: document.getElementById('setting-low-stock-limit').value
+        codDeliveryCharge: getInputVal('setting-cod-fee'),
+        advanceDeliveryCharge: getInputVal('setting-advance-fee'),
+        advancePaymentMethod: getInputVal('setting-advance-method'),
+        advanceAccountTitle: getInputVal('setting-account-title'),
+        advanceAccountNumber: getInputVal('setting-account-number'),
+        advancePaymentInstructions: getInputVal('setting-instructions'),
+        currency: getInputVal('setting-currency') || 'Rs.',
+        lowStockLimit: getInputVal('setting-low-stock-limit')
       };
       const res = await adminPost('updateSettings', { settings });
       if (!res.success) { toast(res.message, true); return; }
       const msg = document.getElementById('settings-saved-msg');
-      msg.classList.remove('hidden');
-      setTimeout(() => msg.classList.add('hidden'), 2500);
-      toast('Settings saved. Refresh your website to see the changes.');
+      if (msg) {
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 2500);
+      }
+      toast('Settings saved successfully!');
     });
   }
 });
