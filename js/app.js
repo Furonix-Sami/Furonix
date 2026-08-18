@@ -30,7 +30,6 @@ function addToCart(productId, quantity = 1) {
     toast.classList.remove('translate-y-10', 'opacity-0');
   }, 10);
   
-  // Animate out
   setTimeout(() => {
     toast.classList.add('translate-y-10', 'opacity-0');
     setTimeout(() => toast.remove(), 300);
@@ -218,8 +217,7 @@ function applySiteSettings() {
     }
     bar.textContent = s.announcementText;
   }
-
-
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const headerElem = document.getElementById('shared-header');
